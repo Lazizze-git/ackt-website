@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ACKT — Le Strava de l'effort intellectuel</title>
+  <meta name="description" content="ACKT rend ton travail visible, valorise et partage. Transforme tes sessions d'apprentissage en une experience sociale motivante.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800;900&family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            pink: '#E8175D',
+            blu: '#1400FF',
+            sun: '#F5C400',
+            mint: '#00BF6F',
+            ink: '#0D0D0D',
+            grey: '#6B7280',
+            lite: '#F7F7F5',
+          },
+          fontFamily: {
+            sans: ['Hanken Grotesk', 'sans-serif'],
+            serif: ['Fraunces', 'serif'],
+          },
+        }
+      }
+    }
+  </script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Hanken Grotesk', sans-serif; background: #FFFFFF; color: #0D0D0D; overflow-x: hidden; }
+
+    /* Animations */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .anim {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    .anim.visible {
+      animation: fadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    .d1 { animation-delay: 0.08s !important; }
+    .d2 { animation-delay: 0.16s !important; }
+    .d3 { animation-delay: 0.24s !important; }
+    .d4 { animation-delay: 0.32s !important; }
+
+    /* Buttons - Figma style */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      font-weight: 600;
+      font-size: 15px;
+      text-decoration: none;
+      border-radius: 10px;
+      transition: transform 0.2s ease, border-radius 0.3s ease, background 0.2s ease;
+      cursor: pointer;
+      border: none;
+      letter-spacing: -0.01em;
+    }
+    .btn:hover { border-radius: 0; }
+    .btn:active { transform: scale(0.96); }
+    .btn:focus-visible { outline: 2px solid #1400FF; outline-offset: 3px; }
+
+    .btn-dark {
+      background: #0D0D0D;
+      color: #FFFFFF;
+    }
+    .btn-dark:hover { background: #1a1a1a; }
+
+    .btn-outline {
+      background: transparent;
+      color: #0D0D0D;
+      border: 1.5px solid #0D0D0D;
+    }
+    .btn-outline:hover { background: #0D0D0D; color: #FFFFFF; }
+
+    /* Phone frame */
+    .phone {
+      width: 272px;
+      height: 556px;
+      background: #0D0D0D;
+      border-radius: 40px;
+      padding: 10px;
+      position: relative;
+    }
+    .phone::before {
+      content: '';
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90px;
+      height: 26px;
+      background: #0D0D0D;
+      border-radius: 0 0 14px 14px;
+      z-index: 10;
+    }
+    .phone-inner {
+      width: 100%;
+      height: 100%;
+      border-radius: 32px;
+      overflow: hidden;
+      background: #f5f5f5;
+    }
+    .phone-inner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top;
+    }
+
+    /* Organic decorative dots */
+    .dot {
+      border-radius: 50%;
+      position: absolute;
+      pointer-events: none;
+    }
+
+    /* Step number */
+    .step-num {
+      font-family: 'Fraunces', serif;
+      font-style: italic;
+      font-size: 80px;
+      line-height: 1;
+      opacity: 0.08;
+      position: absolute;
+      top: 12px;
+      right: 56px;
+      font-weight: 400;
+    }
+
+    /* Card */
+    .card {
+      border: 1px solid #E5E5E5;
+      border-radius: 16px;
+      padding: 36px 28px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s ease, border-color 0.3s ease;
+      background: #FFFFFF;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: #0D0D0D;
+    }
+
+    /* Colored section */
+    .section-color {
+      background: #F7F7F5;
+    }
+
+    /* Tag */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    /* Logo SVG inline */
+    .logo-bar { fill: #E8175D; }
+    .logo-dot-blue { fill: #1400FF; }
+    .logo-dot-yellow { fill: #F5C400; }
+    .logo-dot-green { fill: #00BF6F; }
+
+    /* Mobile optimizations */
+    @media (max-width: 640px) {
+      .step-num {
+        font-size: 56px;
+        right: 16px;
+        top: 6px;
+      }
+
+      .card {
+        padding: 28px 20px;
+      }
+
+      .card .rounded-2xl {
+        height: 200px !important;
+      }
+
+      .card .rounded-2xl img {
+        width: 55% !important;
+      }
+
+      /* Full-width CTA buttons, but not nav button */
+      .btn:not(nav .btn) {
+        width: 100%;
+        justify-content: center;
+      }
+
+      /* Nav button stays compact */
+      nav .btn {
+        width: auto;
+      }
+
+      /* Hero phone smaller on mobile */
+      .hero-phone {
+        width: 230px !important;
+        height: 470px !important;
+      }
+
+      /* Philosophy section: single column, center phone */
+      .philosophy-phones {
+        justify-content: center;
+      }
+
+      /* Features grid: smaller padding on mobile */
+      .features-grid > div {
+        padding: 20px !important;
+      }
+
+      .features-grid h3 {
+        font-size: 15px !important;
+      }
+
+      .features-grid p {
+        font-size: 12px !important;
+      }
+
+      /* Philosophy phone sizing */
+      .philosophy-phones .phone {
+        width: 200px !important;
+        height: 408px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-xl border-b border-black/5">
+    <div class="max-w-[1200px] mx-auto px-6 h-14 flex items-center justify-between">
+      <!-- Logo SVG -->
+      <a href="/" class="flex items-center" style="gap: 8px;">
+        <svg width="68" height="24" viewBox="0 0 160 56" fill="none">
+          <text x="0" y="48" font-family="Hanken Grotesk, sans-serif" font-weight="900" font-size="56" fill="#0D0D0D" letter-spacing="-3">ACKT</text>
+        </svg>
+        <svg width="56" height="12" viewBox="0 0 56 12">
+          <rect x="0" y="1" width="24" height="10" rx="5" class="logo-bar"/>
+          <ellipse cx="32" cy="6" rx="5" ry="5" class="logo-dot-blue"/>
+          <ellipse cx="42" cy="6" rx="4" ry="5" class="logo-dot-yellow"/>
+          <ellipse cx="51" cy="6" rx="4" ry="5" class="logo-dot-green"/>
+        </svg>
+      </a>
+      <a href="#download" class="btn btn-dark" style="padding: 8px 20px; font-size: 13px;">
+        Telecharger
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>
+      </a>
+    </div>
+  </nav>
+
+
+  <!-- HERO -->
+  <section class="min-h-screen flex items-center pt-14 relative overflow-hidden">
+    <!-- Organic background shapes -->
+    <div class="dot w-[400px] h-[400px] -top-32 -right-48 opacity-[0.06]" style="background: #E8175D;"></div>
+    <div class="dot w-[300px] h-[300px] top-1/2 -left-36 opacity-[0.04]" style="background: #1400FF;"></div>
+    <div class="dot w-[200px] h-[200px] bottom-20 right-20 opacity-[0.05]" style="background: #F5C400;"></div>
+
+    <div class="max-w-[1200px] mx-auto px-6 w-full py-20 lg:py-0">
+      <div class="flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
+
+        <div class="flex-1 text-center lg:text-left max-w-2xl">
+          <div class="anim">
+            <span class="tag bg-pink/10 text-pink">Le Strava de l'effort intellectuel</span>
+          </div>
+
+          <h1 class="anim d1 mt-8 text-[clamp(2.5rem,6vw,5rem)] font-black leading-[1.02] tracking-tight text-ink">
+            Ton travail merite<br>d'etre
+            <span class="font-serif italic font-normal text-pink">visible.</span>
+          </h1>
+
+          <p class="anim d2 mt-6 text-lg text-grey max-w-lg mx-auto lg:mx-0" style="line-height: 1.7;">
+            Fini la procrastination solitaire. ACKT transforme tes sessions de travail en une experience sociale motivante.
+          </p>
+
+          <div class="anim d3 mt-10 flex flex-col sm:flex-row gap-3 justify-center lg:justify-start" id="download">
+            <a href="#" class="btn btn-dark">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 21.99 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 21.99C7.79 22.03 6.8 20.68 5.96 19.47C4.25 16.97 2.94 12.45 4.7 9.39C5.57 7.87 7.13 6.91 8.82 6.88C10.1 6.86 11.32 7.75 12.11 7.75C12.89 7.75 14.37 6.68 15.92 6.84C16.57 6.87 18.39 7.1 19.56 8.82C19.47 8.88 17.39 10.1 17.41 12.63C17.44 15.65 20.06 16.66 20.09 16.67C20.06 16.74 19.67 18.11 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z"/></svg>
+              App Store
+            </a>
+          </div>
+        </div>
+
+        <!-- Phone -->
+        <div class="anim d4 flex-shrink-0 relative">
+          <!-- Colored dots around phone -->
+          <div class="dot w-10 h-10 -top-8 right-16 bg-sun" style="z-index: -1;"></div>
+          <div class="dot w-7 h-7 top-24 -right-10 bg-mint" style="z-index: -1;"></div>
+          <div class="dot w-8 h-8 bottom-24 -left-10 bg-blu opacity-70" style="z-index: -1;"></div>
+          <div class="dot w-10 h-10 -bottom-6 right-16 bg-pink opacity-60" style="z-index: -1;"></div>
+
+          <div class="phone hero-phone" style="box-shadow: 0 30px 80px -20px rgba(0,0,0,0.25);">
+            <div class="phone-inner">
+              <img src="/images/timer.png" alt="ACKT - Ecran timer" loading="lazy">
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- COMMENT CA MARCHE -->
+  <section class="py-20 lg:py-32 section-color relative overflow-hidden mx-4 sm:mx-6 lg:mx-auto lg:max-w-[1300px] rounded-3xl">
+    <!-- Background dots -->
+    <div class="dot w-[200px] h-[200px] -top-16 -right-16 opacity-[0.06]" style="background: #1400FF;"></div>
+    <div class="dot w-[150px] h-[150px] bottom-20 -left-16 opacity-[0.05]" style="background: #00BF6F;"></div>
+    <div class="dot w-[100px] h-[100px] top-1/2 right-10 opacity-[0.04]" style="background: #F5C400;"></div>
+
+    <div class="max-w-[1200px] mx-auto px-6">
+
+      <div class="max-w-xl mb-16 anim">
+        <span class="tag border border-ink/10 text-ink/60">Comment ca marche</span>
+        <h2 class="mt-6 text-4xl sm:text-5xl font-black tracking-tight text-ink leading-[1.08]">
+          Trois etapes.<br>
+          <span class="font-serif italic font-normal text-blu">Zero friction.</span>
+        </h2>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-6">
+
+        <!-- 1 -->
+        <div class="card anim d1">
+          <div class="step-num text-pink">01</div>
+          <div class="w-10 h-10 rounded-full bg-pink/10 flex items-center justify-center mb-5">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E8175D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold tracking-tight mb-2">Enregistre</h3>
+          <p class="text-grey text-[15px] leading-relaxed" style="line-height: 1.7;">Lance une session en -20s. Matiere, mode Pomodoro ou libre, c'est parti.</p>
+          <div class="mt-6 rounded-2xl overflow-hidden border border-black/5 bg-lite h-56 flex items-start justify-center pt-5">
+            <img src="/images/timer.png" alt="Timer" class="w-[65%] rounded-t-xl" style="box-shadow: 0 -2px 20px -4px rgba(0,0,0,0.1);" loading="lazy">
+          </div>
+        </div>
+
+        <!-- 2 -->
+        <div class="card anim d2">
+          <div class="step-num text-blu">02</div>
+          <div class="w-10 h-10 rounded-full bg-blu/10 flex items-center justify-center mb-5">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1400FF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold tracking-tight mb-2">Partage</h3>
+          <p class="text-grey text-[15px] leading-relaxed" style="line-height: 1.7;">Tes sessions dans le feed de tes amis. Like, commente, encourage.</p>
+          <div class="mt-6 rounded-2xl overflow-hidden border border-black/5 bg-lite h-56 flex items-start justify-center pt-5">
+            <img src="/images/feed.png" alt="Feed" class="w-[65%] rounded-t-xl" style="box-shadow: 0 -2px 20px -4px rgba(0,0,0,0.1);" loading="lazy">
+          </div>
+        </div>
+
+        <!-- 3 -->
+        <div class="card anim d3">
+          <div class="step-num text-mint">03</div>
+          <div class="w-10 h-10 rounded-full bg-mint/10 flex items-center justify-center mb-5">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00BF6F" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold tracking-tight mb-2">Progresse</h3>
+          <p class="text-grey text-[15px] leading-relaxed" style="line-height: 1.7;">Stats, streaks, defis entre amis. La regularite devient un jeu.</p>
+          <div class="mt-6 rounded-2xl overflow-hidden border border-black/5 bg-lite h-56 flex items-start justify-center pt-5">
+            <img src="/images/profile.png" alt="Profil" class="w-[65%] rounded-t-xl" style="box-shadow: 0 -2px 20px -4px rgba(0,0,0,0.1);" loading="lazy">
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- PHILOSOPHIE -->
+  <section class="py-20 lg:py-32 relative overflow-hidden">
+    <!-- Background dots -->
+    <div class="dot w-[200px] h-[200px] top-10 -left-20 opacity-[0.05]" style="background: #E8175D;"></div>
+    <div class="dot w-[150px] h-[150px] bottom-10 -right-16 opacity-[0.04]" style="background: #F5C400;"></div>
+
+    <div class="max-w-[1200px] mx-auto px-6">
+      <div class="flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
+
+        <!-- Phones -->
+        <div class="anim flex gap-5 flex-shrink-0 relative philosophy-phones">
+          <div class="dot w-12 h-12 -top-10 left-1/3 bg-sun" style="z-index: -1;"></div>
+          <div class="dot w-8 h-8 top-24 -right-12 bg-mint" style="z-index: -1;"></div>
+          <div class="dot w-10 h-10 bottom-28 -left-12 bg-blu opacity-70" style="z-index: -1;"></div>
+          <div class="dot w-12 h-12 -bottom-8 right-1/4 bg-pink opacity-60" style="z-index: -1;"></div>
+
+          <div class="phone" style="width: 232px; height: 474px; border-radius: 36px; padding: 9px; transform: rotate(-2deg); box-shadow: 0 20px 60px -15px rgba(0,0,0,0.2);">
+            <div class="phone-inner" style="border-radius: 28px;">
+              <img src="/images/stats.png" alt="Statistiques" loading="lazy">
+            </div>
+          </div>
+          <div class="phone hidden sm:block" style="width: 232px; height: 474px; border-radius: 36px; padding: 9px; transform: rotate(2deg) translateY(24px); box-shadow: 0 20px 60px -15px rgba(0,0,0,0.2);">
+            <div class="phone-inner" style="border-radius: 28px;">
+              <img src="/images/feed2.png" alt="Feed" loading="lazy">
+            </div>
+          </div>
+        </div>
+
+        <!-- Text -->
+        <div class="flex-1 text-center lg:text-left">
+          <span class="anim tag bg-pink/10 text-pink">La philosophie</span>
+          <h2 class="anim d1 mt-6 text-4xl sm:text-5xl font-black tracking-tight text-ink leading-[1.08]">
+            La fin du travail<br>
+            <span class="font-serif italic font-normal text-pink">invisible.</span>
+          </h2>
+          <p class="anim d2 mt-6 text-lg text-grey max-w-lg mx-auto lg:mx-0" style="line-height: 1.7;">
+            Reviser seul dans sa chambre, personne ne le voit. Cette solitude tue la motivation et nourrit la procrastination.
+          </p>
+          <p class="anim d3 mt-4 text-lg text-ink font-medium max-w-lg mx-auto lg:mx-0" style="line-height: 1.7;">
+            ACKT change la donne : chaque session devient visible, chaque effort est reconnu. La regularite se transforme en fierte partagee.
+          </p>
+          <div class="anim d4 mt-8">
+            <a href="#download" class="btn btn-dark">
+              Commencer gratuitement
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- FEATURES -->
+  <section class="py-20 lg:py-32 bg-ink text-white relative overflow-hidden mx-4 sm:mx-6 lg:mx-auto lg:max-w-[1300px] rounded-3xl">
+    <!-- Organic dots -->
+    <div class="dot w-[300px] h-[300px] -top-20 -right-20 opacity-[0.08]" style="background: #E8175D;"></div>
+    <div class="dot w-[200px] h-[200px] bottom-0 left-10 opacity-[0.06]" style="background: #1400FF;"></div>
+
+    <div class="max-w-[1200px] mx-auto px-6 relative z-10">
+      <div class="max-w-xl mb-16">
+        <span class="anim tag border border-white/20 text-white/60">Fonctionnalites</span>
+        <h2 class="anim d1 mt-6 text-4xl sm:text-5xl font-black tracking-tight leading-[1.08]">
+          Tout pour rester<br>
+          <span class="font-serif italic font-normal text-sun">motive.</span>
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 features-grid">
+
+        <div class="anim d1 rounded-2xl p-7 border border-white/10 transition-transform duration-200 hover:scale-[1.02] hover:border-white/20" style="background: rgba(255,255,255,0.04);">
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center mb-4" style="background: rgba(232,23,93,0.15);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E8175D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          </div>
+          <h3 class="font-bold text-lg tracking-tight mb-1.5">Pomodoro</h3>
+          <p class="text-white/50 text-sm" style="line-height: 1.7;">Timer intelligent. Pomodoro, libre ou compte a rebours.</p>
+        </div>
+
+        <div class="anim d2 rounded-2xl p-7 border border-white/10 transition-transform duration-200 hover:scale-[1.02] hover:border-white/20" style="background: rgba(255,255,255,0.04);">
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center mb-4" style="background: rgba(20,0,255,0.15);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </div>
+          <h3 class="font-bold text-lg tracking-tight mb-1.5">Feed social</h3>
+          <p class="text-white/50 text-sm" style="line-height: 1.7;">Les sessions de tes amis. Like, commente, encourage.</p>
+        </div>
+
+        <div class="anim d3 rounded-2xl p-7 border border-white/10 transition-transform duration-200 hover:scale-[1.02] hover:border-white/20" style="background: rgba(255,255,255,0.04);">
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center mb-4" style="background: rgba(245,196,0,0.15);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F5C400" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+          </div>
+          <h3 class="font-bold text-lg tracking-tight mb-1.5">Statistiques</h3>
+          <p class="text-white/50 text-sm" style="line-height: 1.7;">Heatmap, graphiques de progression, rapports bien-etre.</p>
+        </div>
+
+        <div class="anim d4 rounded-2xl p-7 border border-white/10 transition-transform duration-200 hover:scale-[1.02] hover:border-white/20" style="background: rgba(255,255,255,0.04);">
+          <div class="w-10 h-10 rounded-lg flex items-center justify-center mb-4" style="background: rgba(0,191,111,0.15);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00BF6F" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          </div>
+          <h3 class="font-bold text-lg tracking-tight mb-1.5">Streaks & defis</h3>
+          <p class="text-white/50 text-sm" style="line-height: 1.7;">Series, defis entre amis, emulation saine.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- CTA FINAL -->
+  <section class="py-20 lg:py-32 relative overflow-hidden">
+    <!-- Background dots -->
+    <div class="dot w-[160px] h-[160px] top-8 -left-12 opacity-[0.06]" style="background: #F5C400;"></div>
+    <div class="dot w-[120px] h-[120px] bottom-8 -right-10 opacity-[0.05]" style="background: #00BF6F;"></div>
+    <div class="dot w-16 h-16 top-20 left-[10%] bg-sun opacity-20"></div>
+    <div class="dot w-10 h-10 top-40 right-[15%] bg-mint opacity-20"></div>
+    <div class="dot w-6 h-6 bottom-20 left-[30%] bg-blu opacity-15"></div>
+    <div class="dot w-12 h-12 bottom-10 right-[20%] bg-pink opacity-15"></div>
+
+    <div class="max-w-3xl mx-auto px-6 text-center relative z-10">
+      <h2 class="anim text-4xl sm:text-5xl lg:text-[3.5rem] font-black tracking-tight text-ink leading-[1.08]">
+        Pret a rendre ton effort
+        <span class="font-serif italic font-normal text-pink">visible</span> ?
+      </h2>
+      <p class="anim d1 mt-5 text-lg text-grey max-w-md mx-auto" style="line-height: 1.7;">
+        Rejoins la communaute. Gratuit, pour toujours.
+      </p>
+      <div class="anim d2 mt-10 flex flex-col sm:flex-row gap-3 justify-center">
+        <a href="#" class="btn btn-dark">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 21.99 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 21.99C7.79 22.03 6.8 20.68 5.96 19.47C4.25 16.97 2.94 12.45 4.7 9.39C5.57 7.87 7.13 6.91 8.82 6.88C10.1 6.86 11.32 7.75 12.11 7.75C12.89 7.75 14.37 6.68 15.92 6.84C16.57 6.87 18.39 7.1 19.56 8.82C19.47 8.88 17.39 10.1 17.41 12.63C17.44 15.65 20.06 16.66 20.09 16.67C20.06 16.74 19.67 18.11 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z"/></svg>
+          App Store
+        </a>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- FOOTER -->
+  <footer class="border-t border-black/10 py-14 relative overflow-hidden">
+    <div class="dot w-[150px] h-[150px] -bottom-16 -right-16 opacity-[0.04]" style="background: #1400FF;"></div>
+    <div class="dot w-[100px] h-[100px] top-10 -left-12 opacity-[0.04]" style="background: #E8175D;"></div>
+    <div class="max-w-[1200px] mx-auto px-6">
+      <div class="flex flex-col md:flex-row justify-between items-start gap-10">
+        <div>
+          <a href="/" class="text-2xl font-black tracking-tight text-ink">ACKT</a>
+          <p class="text-sm text-grey mt-2 max-w-xs" style="line-height: 1.7;">Rends ton effort intellectuel visible, valorise et partage.</p>
+        </div>
+        <div class="flex gap-14">
+          <div>
+            <p class="text-xs font-bold tracking-widest uppercase text-grey/60 mb-3">Legal</p>
+            <ul class="space-y-2.5">
+              <li><a href="/privacy.html" class="text-sm text-ink hover:text-pink transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-blu focus-visible:outline-offset-2">Politique de confidentialite</a></li>
+              <li><a href="/terms.html" class="text-sm text-ink hover:text-pink transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-blu focus-visible:outline-offset-2">Termes et conditions</a></li>
+            </ul>
+          </div>
+          <div>
+            <p class="text-xs font-bold tracking-widest uppercase text-grey/60 mb-3">Contact</p>
+            <ul class="space-y-2.5">
+              <li><a href="mailto:contact@ackt.app" class="text-sm text-ink hover:text-pink transition-colors duration-200">contact@ackt.app</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="mt-14 pt-6 border-t border-black/5 flex flex-col sm:flex-row justify-between items-center gap-3">
+        <p class="text-xs text-grey">&copy; 2026 ACKT. Tous droits reserves.</p>
+        <div class="flex gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-pink"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-blu"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-sun"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-mint"></span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+
+  <script>
+    if (window.location.search.includes('noanim')) {
+      document.querySelectorAll('.anim').forEach(el => {
+        el.style.opacity = '1';
+        el.style.transform = 'none';
+      });
+    } else {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+      document.querySelectorAll('.anim').forEach(el => observer.observe(el));
+    }
+  </script>
+
+</body>
+</html>
