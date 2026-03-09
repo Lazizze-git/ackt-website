@@ -19,3 +19,4 @@ jobs:
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
         server-dir: /web/  # Le dossier de destination chez Infomaniak
+        dangerous-clean-slate: true  # Supprime les fichiers existants (welcome.php etc.)
