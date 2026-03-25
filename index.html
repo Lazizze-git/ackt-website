@@ -21,6 +21,11 @@
       --line:   1px solid #080808;
       --f:      'Helvetica Neue', Helvetica, Arial, sans-serif;
       --p:      clamp(20px, 4vw, 48px); /* horizontal padding */
+      /* ── ACCENT PALETTE ─── */
+      --yellow: #F5D03B;
+      --pink:   #F04E8A;
+      --blue:   #2235E8;
+      --green:  #3A7D44;
     }
 
     body {
@@ -48,10 +53,10 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      background: var(--ink);
+      background: var(--blue);
       overflow: hidden;
       white-space: nowrap;
-      border-bottom: var(--line);
+      border-bottom: 1px solid rgba(0,0,0,.15);
       padding: 12px 0;
     }
     .ticker-rail {
@@ -302,8 +307,8 @@
        STRIP — full-bleed statement
     ════════════════════════════════════════════════════ */
     .strip {
-      background: var(--ink);
-      color: var(--paper);
+      background: var(--yellow);
+      color: var(--ink);
       padding: 80px var(--p);
       border-bottom: var(--line);
     }
@@ -395,7 +400,7 @@
     }
     .pb-col { padding: 32px var(--p); }
     .pb-col-before { border-right: var(--line); }
-    .pb-col-after  { background: var(--ink); color: #fff; }
+    .pb-col-after  { background: var(--green); color: #fff; }
 
     .pb-col-head {
       font-size: 10px;
@@ -619,17 +624,17 @@
        FOOTER
     ════════════════════════════════════════════════════ */
     footer {
-      background: var(--ink);
+      background: var(--pink);
       color: var(--paper);
     }
     .footer-top {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      border-bottom: 1px solid rgba(255,255,255,.1);
+      border-bottom: 1px solid rgba(255,255,255,.2);
     }
     .footer-brand {
       padding: 48px var(--p);
-      border-right: 1px solid rgba(255,255,255,.1);
+      border-right: 1px solid rgba(255,255,255,.2);
     }
     .footer-logo {
       font-size: 32px;
@@ -675,16 +680,17 @@
       align-items: center;
       gap: 16px;
       flex-wrap: wrap;
+      background: var(--pink);
     }
     .footer-copy {
       font-size: 10px;
       letter-spacing: .1em;
-      color: rgba(255,255,255,.2);
+      color: rgba(255,255,255,.8);
     }
     .footer-legal {
       font-size: 10px;
       letter-spacing: .1em;
-      color: rgba(255,255,255,.2);
+      color: rgba(255,255,255,.8);
     }
 
     /* ════════════════════════════════════════════════════
@@ -774,6 +780,33 @@
     .sheet-body ul { padding-left: 20px; }
     .sheet-body li { margin-bottom: 4px; }
     .sheet-body strong { font-weight: 600; color: var(--ink); }
+
+    /* ── ACCENT COLORS ───────────────────────────────────── */
+    /* Feature rows — numéro + bordure gauche + flèche */
+    .feat:nth-child(2) { border-left: 4px solid var(--yellow); }
+    .feat:nth-child(3) { border-left: 4px solid var(--pink); }
+    .feat:nth-child(4) { border-left: 4px solid var(--blue); }
+    .feat:nth-child(5) { border-left: 4px solid var(--green); }
+
+    .feat:nth-child(2) .feat-n { color: var(--yellow); }
+    .feat:nth-child(3) .feat-n { color: var(--pink); }
+    .feat:nth-child(4) .feat-n { color: var(--blue); }
+    .feat:nth-child(5) .feat-n { color: var(--green); }
+
+    .feat:nth-child(2) .feat-arrow { color: var(--yellow); }
+    .feat:nth-child(3) .feat-arrow { color: var(--pink); }
+    .feat:nth-child(4) .feat-arrow { color: var(--blue); }
+    .feat:nth-child(5) .feat-arrow { color: var(--green); }
+
+    /* Au hover, la flèche reste dans sa couleur accent */
+    .feat:nth-child(2):hover .feat-arrow { color: var(--yellow); }
+    .feat:nth-child(3):hover .feat-arrow { color: var(--pink); }
+    .feat:nth-child(4):hover .feat-arrow { color: var(--blue); }
+    .feat:nth-child(5):hover .feat-arrow { color: var(--green); }
+
+    /* CTA button blue */
+    .btn-fill { background: var(--blue); color: var(--paper); border-color: var(--blue); }
+    .btn-fill:hover { background: transparent; color: var(--blue); border-color: var(--blue); }
   </style>
 </head>
 <body>
