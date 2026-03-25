@@ -807,6 +807,37 @@
     /* CTA button blue */
     .btn-fill { background: var(--blue); color: var(--paper); border-color: var(--blue); }
     .btn-fill:hover { background: transparent; color: var(--blue); border-color: var(--blue); }
+
+    /* ── LANG PICKER ─────────────────────────────────────── */
+    .lang-picker { position: relative; }
+    .lang-btn {
+      display: flex; align-items: center; gap: 6px;
+      font-family: var(--f); font-size: 10px; font-weight: 500;
+      letter-spacing: .2em; text-transform: uppercase;
+      color: rgba(255,255,255,.75); background: none;
+      border: 1px solid rgba(255,255,255,.4); padding: 5px 12px;
+      cursor: pointer; transition: color .15s, border-color .15s;
+    }
+    .lang-btn:hover { color: #fff; border-color: rgba(255,255,255,.8); }
+    .lang-menu {
+      position: absolute; right: 0; top: calc(100% + 8px);
+      background: var(--paper); border: var(--line);
+      list-style: none; min-width: 160px; z-index: 200; display: none;
+      box-shadow: 0 8px 24px rgba(0,0,0,.12);
+    }
+    .lang-menu.open { display: block; }
+    .lang-opt {
+      display: block; width: 100%;
+      font-family: var(--f); font-size: 10px; font-weight: 500;
+      letter-spacing: .18em; text-transform: uppercase;
+      color: var(--ink); background: none; border: none;
+      border-bottom: 1px solid var(--rule);
+      padding: 12px 16px; text-align: left; cursor: pointer;
+      transition: background .12s;
+    }
+    .lang-opt:last-child { border-bottom: none; }
+    .lang-opt:hover { background: var(--smoke); }
+    .lang-opt.active { font-weight: 700; }
   </style>
 </head>
 <body>
@@ -815,17 +846,17 @@
 <div class="ticker" aria-hidden="true">
   <div class="ticker-rail">
     <span class="ts">OnTrack</span><span class="ts td">—</span>
-    <span class="ts">Le Strava de l'effort intellectuel</span><span class="ts td">—</span>
-    <span class="ts">Disponible sur App Store</span><span class="ts td">—</span>
-    <span class="ts">Track your mind</span><span class="ts td">—</span>
-    <span class="ts">Mesure ton potentiel</span><span class="ts td">—</span>
-    <span class="ts">Chaque session compte</span><span class="ts td">—</span>
+    <span class="ts" data-i18n="ticker_slogan">Le Strava de l'effort intellectuel</span><span class="ts td">—</span>
+    <span class="ts" data-i18n="ticker_avail">Disponible sur App Store</span><span class="ts td">—</span>
+    <span class="ts" data-i18n="ticker_track">Track your mind</span><span class="ts td">—</span>
+    <span class="ts" data-i18n="ticker_potential">Mesure ton potentiel</span><span class="ts td">—</span>
+    <span class="ts" data-i18n="ticker_session">Chaque session compte</span><span class="ts td">—</span>
     <span class="ts">OnTrack</span><span class="ts td">—</span>
-    <span class="ts">Le Strava de l'effort intellectuel</span><span class="ts td">—</span>
-    <span class="ts">Disponible sur App Store</span><span class="ts td">—</span>
-    <span class="ts">Track your mind</span><span class="ts td">—</span>
-    <span class="ts">Mesure ton potentiel</span><span class="ts td">—</span>
-    <span class="ts">Chaque session compte</span><span class="ts td">—</span>
+    <span class="ts" data-i18n="ticker_slogan">Le Strava de l'effort intellectuel</span><span class="ts td">—</span>
+    <span class="ts" data-i18n="ticker_avail">Disponible sur App Store</span><span class="ts td">—</span>
+    <span class="ts" data-i18n="ticker_track">Track your mind</span><span class="ts td">—</span>
+    <span class="ts" data-i18n="ticker_potential">Mesure ton potentiel</span><span class="ts td">—</span>
+    <span class="ts" data-i18n="ticker_session">Chaque session compte</span><span class="ts td">—</span>
   </div>
 </div>
 
@@ -839,22 +870,34 @@
 
   <!-- top bar -->
   <div class="hero-topbar">
-    <span class="lbl-box">Application mobile — iOS</span>
-    <span class="lbl">2025</span>
+    <span class="lbl-box" data-i18n="hero_label">Application mobile — iOS</span>
+    <div class="lang-picker">
+      <button class="lang-btn" id="lang-btn" aria-label="Langue">
+        <span id="lang-current">FR</span>
+        <svg width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+      <ul class="lang-menu" id="lang-menu" role="listbox">
+        <li><button class="lang-opt active" data-lang="fr">FR — Français</button></li>
+        <li><button class="lang-opt" data-lang="en">EN — English</button></li>
+        <li><button class="lang-opt" data-lang="de">DE — Deutsch</button></li>
+        <li><button class="lang-opt" data-lang="it">IT — Italiano</button></li>
+        <li><button class="lang-opt" data-lang="es">ES — Español</button></li>
+      </ul>
+    </div>
   </div>
 
   <!-- bottom content -->
   <div class="hero-content">
     <div class="hero-title-wrap">
       <h1 class="d-hero r d1">OnTrack</h1>
-      <p class="hero-sub r d2">Transforme chaque session de travail<br>en données qui comptent vraiment.</p>
+      <p class="hero-sub r d2" data-i18n-html="hero_sub">Transforme chaque session de travail<br>en données qui comptent vraiment.</p>
     </div>
     <div class="hero-cta-wrap r d2">
       <a href="#" class="btn btn-white">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11"/></svg>
-        Télécharger — App Store
+        <span data-i18n="btn_download">Télécharger — App Store</span>
       </a>
-      <span class="subnote-white">Gratuit · iOS 16+</span>
+      <span class="subnote-white" data-i18n="hero_subnote">Gratuit · iOS 16+</span>
     </div>
   </div>
 
@@ -862,9 +905,7 @@
 
 <!-- ── STRIP ─────────────────────────────────────────────── -->
 <section class="strip">
-  <p class="strip-text r">
-    Tu travailles.<br>Mais est-ce que<br>tu progresses ?
-  </p>
+  <p class="strip-text r" data-i18n-html="strip_text">Tu travailles.<br>Mais est-ce que<br>tu progresses ?</p>
 </section>
 
 <!-- ── PROBLEM + COMPARISON ──────────────────────────────── -->
@@ -876,27 +917,27 @@
       <img src="images/photo2.jpg" alt="Étudiante concentrée">
     </div>
     <div class="split-content">
-      <span class="lbl r">Le problème</span>
-      <h2 class="pb-title r d1">L'effort invisible n'existe pas.</h2>
-      <p class="pb-body r d2">Les athlètes trackent chaque kilomètre. Les étudiants, créateurs et pros du savoir travaillent dans le flou total — sans métriques, sans feedback. OnTrack change ça.</p>
+      <span class="lbl r" data-i18n="pb_label">Le problème</span>
+      <h2 class="pb-title r d1" data-i18n="pb_title">L'effort invisible n'existe pas.</h2>
+      <p class="pb-body r d2" data-i18n="pb_body">Les athlètes trackent chaque kilomètre. Les étudiants, créateurs et pros du savoir travaillent dans le flou total — sans métriques, sans feedback. OnTrack change ça.</p>
     </div>
   </div>
 
   <!-- comparison : 2 colonnes -->
   <div class="pb-cmp">
     <div class="pb-col pb-col-before">
-      <div class="pb-col-head">Sans OnTrack</div>
-      <div class="pb-line"><span class="pb-x">×</span><span>Sessions estimées à la louche</span></div>
-      <div class="pb-line"><span class="pb-x">×</span><span>Aucun feedback sur ta concentration</span></div>
-      <div class="pb-line"><span class="pb-x">×</span><span>Progression invisible, non comparable</span></div>
-      <div class="pb-line"><span class="pb-x">×</span><span>Motivation fragile, sans preuve</span></div>
+      <div class="pb-col-head" data-i18n="cmp_before">Sans OnTrack</div>
+      <div class="pb-line"><span class="pb-x">×</span><span data-i18n="cmp_b1">Sessions estimées à la louche</span></div>
+      <div class="pb-line"><span class="pb-x">×</span><span data-i18n="cmp_b2">Aucun feedback sur ta concentration</span></div>
+      <div class="pb-line"><span class="pb-x">×</span><span data-i18n="cmp_b3">Progression invisible, non comparable</span></div>
+      <div class="pb-line"><span class="pb-x">×</span><span data-i18n="cmp_b4">Motivation fragile, sans preuve</span></div>
     </div>
     <div class="pb-col pb-col-after">
-      <div class="pb-col-head">Avec OnTrack</div>
-      <div class="pb-line"><span class="pb-plus">+</span><span>Sessions chronométrées et catégorisées</span></div>
-      <div class="pb-line"><span class="pb-plus">+</span><span>Score de concentration en temps réel</span></div>
-      <div class="pb-line"><span class="pb-plus">+</span><span>Graphes hebdomadaires et mensuels</span></div>
-      <div class="pb-line"><span class="pb-plus">+</span><span>Streaks et objectifs personnalisés</span></div>
+      <div class="pb-col-head" data-i18n="cmp_after">Avec OnTrack</div>
+      <div class="pb-line"><span class="pb-plus">+</span><span data-i18n="cmp_a1">Sessions chronométrées et catégorisées</span></div>
+      <div class="pb-line"><span class="pb-plus">+</span><span data-i18n="cmp_a2">Score de concentration en temps réel</span></div>
+      <div class="pb-line"><span class="pb-plus">+</span><span data-i18n="cmp_a3">Graphes hebdomadaires et mensuels</span></div>
+      <div class="pb-line"><span class="pb-plus">+</span><span data-i18n="cmp_a4">Streaks et objectifs personnalisés</span></div>
     </div>
   </div>
 
@@ -906,17 +947,17 @@
 <section class="features">
   <div class="features-head">
     <div>
-      <span class="lbl r">Fonctionnalités</span>
-      <h2 class="d-xl r d1" style="margin-top:20px;">Ce que fait<br>OnTrack.</h2>
+      <span class="lbl r" data-i18n="feat_label">Fonctionnalités</span>
+      <h2 class="d-xl r d1" style="margin-top:20px;" data-i18n-html="feat_title">Ce que fait<br>OnTrack.</h2>
     </div>
-    <p class="body r d2">Quatre piliers conçus pour rendre ton effort intellectuel aussi mesurable et motivant que l'entraînement physique.</p>
+    <p class="body r d2" data-i18n="feat_body">Quatre piliers conçus pour rendre ton effort intellectuel aussi mesurable et motivant que l'entraînement physique.</p>
   </div>
 
   <div class="feat r">
     <span class="feat-n">01</span>
     <div class="feat-body">
-      <h3 class="feat-title">Suivi en temps réel</h3>
-      <p class="feat-desc">Lance une session en un tap. OnTrack mesure ta concentration active, détecte les interruptions et te donne un score à la fin. Simple. Précis.</p>
+      <h3 class="feat-title" data-i18n="feat1_title">Suivi en temps réel</h3>
+      <p class="feat-desc" data-i18n="feat1_desc">Lance une session en un tap. OnTrack mesure ta concentration active, détecte les interruptions et te donne un score à la fin. Simple. Précis.</p>
     </div>
     <span class="feat-arrow">→</span>
   </div>
@@ -924,8 +965,8 @@
   <div class="feat r">
     <span class="feat-n">02</span>
     <div class="feat-body">
-      <h3 class="feat-title">Analyse de la concentration</h3>
-      <p class="feat-desc">Courbe d'énergie, fenêtres de peak performance, moments à risque de décrochage — transformés en insights lisibles.</p>
+      <h3 class="feat-title" data-i18n="feat2_title">Analyse de la concentration</h3>
+      <p class="feat-desc" data-i18n="feat2_desc">Courbe d'énergie, fenêtres de peak performance, moments à risque de décrochage — transformés en insights lisibles.</p>
     </div>
     <span class="feat-arrow">→</span>
   </div>
@@ -933,8 +974,8 @@
   <div class="feat r">
     <span class="feat-n">03</span>
     <div class="feat-body">
-      <h3 class="feat-title">Objectifs personnalisés</h3>
-      <p class="feat-desc">Définis tes cibles hebdomadaires par domaine. OnTrack te rappelle, t'encourage et te montre où tu déroges à ton plan.</p>
+      <h3 class="feat-title" data-i18n="feat3_title">Objectifs personnalisés</h3>
+      <p class="feat-desc" data-i18n="feat3_desc">Définis tes cibles hebdomadaires par domaine. OnTrack te rappelle, t'encourage et te montre où tu déroges à ton plan.</p>
     </div>
     <span class="feat-arrow">→</span>
   </div>
@@ -942,8 +983,8 @@
   <div class="feat r">
     <span class="feat-n">04</span>
     <div class="feat-body">
-      <h3 class="feat-title">Insights hebdomadaires</h3>
-      <p class="feat-desc">Chaque lundi, un rapport arrive. Meilleures heures, domaine le plus travaillé, progression mois sur mois.</p>
+      <h3 class="feat-title" data-i18n="feat4_title">Insights hebdomadaires</h3>
+      <p class="feat-desc" data-i18n="feat4_desc">Chaque lundi, un rapport arrive. Meilleures heures, domaine le plus travaillé, progression mois sur mois.</p>
     </div>
     <span class="feat-arrow">→</span>
   </div>
@@ -954,7 +995,7 @@
   <img src="images/photo2.jpg" alt="Étudiante concentrée à son bureau devant une fenêtre" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 30%;">
 </div>
 <div class="caption-bar bb">
-  <span class="caption-q">"La discipline, c'est se souvenir de ce que l'on veut vraiment."</span>
+  <span class="caption-q" data-i18n="caption_quote">"La discipline, c'est se souvenir de ce que l'on veut vraiment."</span>
   <span class="caption-ref">Fig. 01</span>
 </div>
 
@@ -963,19 +1004,19 @@
   <div class="stats-row">
     <div class="stat-cell r">
       <span class="stat-num">847</span>
-      <span class="stat-lbl">Sessions par jour</span>
+      <span class="stat-lbl" data-i18n="stat1_lbl">Sessions par jour</span>
     </div>
     <div class="stat-cell r d1">
       <span class="stat-num">3.2h</span>
-      <span class="stat-lbl">Concentration moyenne</span>
+      <span class="stat-lbl" data-i18n="stat2_lbl">Concentration moyenne</span>
     </div>
     <div class="stat-cell r d2">
       <span class="stat-num">94%</span>
-      <span class="stat-lbl">Objectifs complétés</span>
+      <span class="stat-lbl" data-i18n="stat3_lbl">Objectifs complétés</span>
     </div>
     <div class="stat-cell r d3">
       <span class="stat-num">12k+</span>
-      <span class="stat-lbl">Utilisateurs actifs</span>
+      <span class="stat-lbl" data-i18n="stat4_lbl">Utilisateurs actifs</span>
     </div>
   </div>
 </section>
@@ -992,15 +1033,13 @@
 
 <!-- ── CTA FINAL ─────────────────────────────────────────── -->
 <section class="cta">
-  <h2 class="d-xl r">
-    Commence à<br>te mesurer.
-  </h2>
+  <h2 class="d-xl r" data-i18n-html="cta_title">Commence à<br>te mesurer.</h2>
   <div class="cta-actions r d1">
     <a href="#" class="btn btn-fill">
       <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11"/></svg>
-      Télécharger — App Store
+      <span data-i18n="btn_download">Télécharger — App Store</span>
     </a>
-    <span class="subnote">Gratuit · Sans publicité · iOS 16+</span>
+    <span class="subnote" data-i18n="cta_subnote">Gratuit · Sans publicité · iOS 16+</span>
   </div>
 </section>
 
@@ -1009,17 +1048,17 @@
   <div class="footer-top">
     <div class="footer-brand">
       <div class="footer-logo">OnTrack</div>
-      <div class="footer-sub">Le Strava de l'effort intellectuel</div>
+      <div class="footer-sub" data-i18n="footer_sub">Le Strava de l'effort intellectuel</div>
     </div>
     <div class="footer-nav">
-      <button class="f-link" onclick="openModal('privacy')">Politique de confidentialité</button>
-      <button class="f-link" onclick="openModal('terms')">Conditions d'utilisation</button>
-      <a href="mailto:dpo@ontrack.app" class="f-link">Contact DPO</a>
+      <button class="f-link" onclick="openModal('privacy')" data-i18n="nav_privacy">Politique de confidentialité</button>
+      <button class="f-link" onclick="openModal('terms')" data-i18n="nav_terms">Conditions d'utilisation</button>
+      <a href="mailto:dpo@ontrack.app" class="f-link" data-i18n="nav_dpo">Contact DPO</a>
     </div>
   </div>
   <div class="footer-bottom">
-    <span class="footer-copy">© 2025 OnTrack. Tous droits réservés.</span>
-    <span class="footer-legal">Droit suisse · LPD & RGPD</span>
+    <span class="footer-copy" data-i18n="footer_copy">© 2025 OnTrack. Tous droits réservés.</span>
+    <span class="footer-legal" data-i18n="footer_legal">Droit suisse · LPD & RGPD</span>
   </div>
 </footer>
 
@@ -1027,53 +1066,53 @@
 <div class="overlay" id="modal-privacy" role="dialog" aria-modal="true" aria-labelledby="t-privacy">
   <div class="sheet">
     <div class="sheet-bar">
-      <h2 class="sheet-title" id="t-privacy">Politique de confidentialité</h2>
-      <button class="sheet-close" onclick="closeModal('privacy')">Fermer ×</button>
+      <h2 class="sheet-title" id="t-privacy" data-i18n="modal_privacy_title">Politique de confidentialité</h2>
+      <button class="sheet-close" onclick="closeModal('privacy')"><span data-i18n="modal_close">Fermer</span> ×</button>
     </div>
     <div class="sheet-body">
-      <span class="sheet-date">Mise à jour — 01 janvier 2025</span>
+      <span class="sheet-date" data-i18n="modal_privacy_date">Mise à jour — 01 janvier 2025</span>
 
-      <h3>1. Responsable du traitement</h3>
-      <p>OnTrack est responsable du traitement de vos données personnelles. Contact : <strong>dpo@ontrack.app</strong>. Siège social : Genève, Suisse.</p>
+      <h3 data-i18n="priv_h1">1. Responsable du traitement</h3>
+      <p data-i18n-html="priv_p1">OnTrack est responsable du traitement de vos données personnelles. Contact : <strong>dpo@ontrack.app</strong>. Siège social : Genève, Suisse.</p>
 
-      <h3>2. Données collectées</h3>
-      <p>Nous collectons uniquement les données nécessaires au fonctionnement de l'application :</p>
-      <ul>
+      <h3 data-i18n="priv_h2">2. Données collectées</h3>
+      <p data-i18n="priv_p2">Nous collectons uniquement les données nécessaires au fonctionnement de l'application :</p>
+      <ul data-i18n-html="priv_ul2">
         <li>Données de compte : adresse e-mail, pseudonyme (si applicable)</li>
         <li>Données d'usage : durée des sessions, catégories, scores de concentration</li>
         <li>Données techniques : version iOS, type d'appareil, logs d'erreur anonymisés</li>
         <li>Données de paiement : traitées exclusivement par Apple — nous n'y avons pas accès</li>
       </ul>
-      <p>Nous ne collectons <strong>jamais</strong> : localisation, contacts, photos, micro, caméra.</p>
+      <p data-i18n-html="priv_p2b">Nous ne collectons <strong>jamais</strong> : localisation, contacts, photos, micro, caméra.</p>
 
-      <h3>3. Bases légales</h3>
-      <ul>
+      <h3 data-i18n="priv_h3">3. Bases légales</h3>
+      <ul data-i18n-html="priv_ul3">
         <li><strong>Exécution du contrat</strong> (art. 6.1.b RGPD) — fonctionnement et synchronisation</li>
         <li><strong>Intérêt légitime</strong> (art. 6.1.f RGPD) — analytics agrégés et anonymisés</li>
         <li><strong>Consentement</strong> (art. 6.1.a RGPD) — notifications push si activées</li>
       </ul>
 
-      <h3>4. Conservation</h3>
-      <p>Données conservées pendant la durée d'utilisation active, puis supprimées sous 30 jours après fermeture du compte. Logs techniques : 12 mois.</p>
+      <h3 data-i18n="priv_h4">4. Conservation</h3>
+      <p data-i18n="priv_p4">Données conservées pendant la durée d'utilisation active, puis supprimées sous 30 jours après fermeture du compte. Logs techniques : 12 mois.</p>
 
-      <h3>5. Partage</h3>
-      <p>Nous ne vendons jamais vos données. Partage possible uniquement avec nos sous-traitants techniques (sous contrat strict) et les autorités compétentes sur obligation légale.</p>
+      <h3 data-i18n="priv_h5">5. Partage</h3>
+      <p data-i18n="priv_p5">Nous ne vendons jamais vos données. Partage possible uniquement avec nos sous-traitants techniques (sous contrat strict) et les autorités compétentes sur obligation légale.</p>
 
-      <h3>6. Transferts internationaux</h3>
-      <p>Hébergement en Europe (UE). Tout transfert hors UE est encadré par les clauses contractuelles types de la Commission européenne.</p>
+      <h3 data-i18n="priv_h6">6. Transferts internationaux</h3>
+      <p data-i18n="priv_p6">Hébergement en Europe (UE). Tout transfert hors UE est encadré par les clauses contractuelles types de la Commission européenne.</p>
 
-      <h3>7. Vos droits</h3>
-      <p>Conformément au RGPD (art. 15–22) et à la nLPD suisse, vous disposez des droits d'accès, rectification, effacement, portabilité, opposition et limitation.</p>
-      <p>Pour les exercer : <strong>dpo@ontrack.app</strong> — réponse sous 30 jours.</p>
+      <h3 data-i18n="priv_h7">7. Vos droits</h3>
+      <p data-i18n="priv_p7">Conformément au RGPD (art. 15–22) et à la nLPD suisse, vous disposez des droits d'accès, rectification, effacement, portabilité, opposition et limitation.</p>
+      <p data-i18n-html="priv_p7b">Pour les exercer : <strong>dpo@ontrack.app</strong> — réponse sous 30 jours.</p>
 
-      <h3>8. DPO</h3>
-      <p>Délégué à la protection des données : <strong>dpo@ontrack.app</strong>. Autorité compétente : PFPDT (Suisse) ou CNIL (France).</p>
+      <h3 data-i18n="priv_h8">8. DPO</h3>
+      <p data-i18n-html="priv_p8">Délégué à la protection des données : <strong>dpo@ontrack.app</strong>. Autorité compétente : PFPDT (Suisse) ou CNIL (France).</p>
 
-      <h3>9. Sécurité</h3>
-      <p>Chiffrement en transit (TLS 1.3) et au repos (AES-256). Accès restreint au personnel nécessaire sous engagement de confidentialité.</p>
+      <h3 data-i18n="priv_h9">9. Sécurité</h3>
+      <p data-i18n="priv_p9">Chiffrement en transit (TLS 1.3) et au repos (AES-256). Accès restreint au personnel nécessaire sous engagement de confidentialité.</p>
 
-      <h3>10. Droit applicable</h3>
-      <p>Droit suisse, nLPD (RS 235.1), et RGPD pour les utilisateurs résidant dans l'UE.</p>
+      <h3 data-i18n="priv_h10">10. Droit applicable</h3>
+      <p data-i18n="priv_p10">Droit suisse, nLPD (RS 235.1), et RGPD pour les utilisateurs résidant dans l'UE.</p>
     </div>
   </div>
 </div>
@@ -1082,46 +1121,584 @@
 <div class="overlay" id="modal-terms" role="dialog" aria-modal="true" aria-labelledby="t-terms">
   <div class="sheet">
     <div class="sheet-bar">
-      <h2 class="sheet-title" id="t-terms">Conditions d'utilisation</h2>
-      <button class="sheet-close" onclick="closeModal('terms')">Fermer ×</button>
+      <h2 class="sheet-title" id="t-terms" data-i18n="modal_terms_title">Conditions d'utilisation</h2>
+      <button class="sheet-close" onclick="closeModal('terms')"><span data-i18n="modal_close">Fermer</span> ×</button>
     </div>
     <div class="sheet-body">
-      <span class="sheet-date">Mise à jour — 01 janvier 2025</span>
+      <span class="sheet-date" data-i18n="modal_terms_date">Mise à jour — 01 janvier 2025</span>
 
-      <h3>1. Acceptation</h3>
-      <p>En téléchargeant ou utilisant OnTrack, vous acceptez les présentes conditions. Dans le cas contraire, veuillez ne pas utiliser l'application.</p>
+      <h3 data-i18n="terms_h1">1. Acceptation</h3>
+      <p data-i18n="terms_p1">En téléchargeant ou utilisant OnTrack, vous acceptez les présentes conditions. Dans le cas contraire, veuillez ne pas utiliser l'application.</p>
 
-      <h3>2. Service</h3>
-      <p>OnTrack est une application mobile de suivi de l'effort intellectuel permettant de mesurer, analyser et visualiser vos sessions de travail. Certaines fonctionnalités avancées nécessitent un abonnement payant.</p>
+      <h3 data-i18n="terms_h2">2. Service</h3>
+      <p data-i18n="terms_p2">OnTrack est une application mobile de suivi de l'effort intellectuel permettant de mesurer, analyser et visualiser vos sessions de travail. Certaines fonctionnalités avancées nécessitent un abonnement payant.</p>
 
-      <h3>3. Compte utilisateur</h3>
-      <p>Vous êtes responsable de la confidentialité de vos identifiants. Vous vous engagez à fournir des informations exactes, maintenir la sécurité de vos accès et nous notifier de tout accès non autorisé.</p>
+      <h3 data-i18n="terms_h3">3. Compte utilisateur</h3>
+      <p data-i18n="terms_p3">Vous êtes responsable de la confidentialité de vos identifiants. Vous vous engagez à fournir des informations exactes, maintenir la sécurité de vos accès et nous notifier de tout accès non autorisé.</p>
 
-      <h3>4. Utilisation acceptable</h3>
-      <p>Usage exclusivement légal et conforme aux présentes conditions. Sont notamment interdits : compromettre la sécurité de l'application, reproduire ou vendre le service, utiliser des robots automatisés, usurper une identité.</p>
+      <h3 data-i18n="terms_h4">4. Utilisation acceptable</h3>
+      <p data-i18n="terms_p4">Usage exclusivement légal et conforme aux présentes conditions. Sont notamment interdits : compromettre la sécurité de l'application, reproduire ou vendre le service, utiliser des robots automatisés, usurper une identité.</p>
 
-      <h3>5. Propriété intellectuelle</h3>
-      <p>OnTrack et tous ses éléments sont protégés par les lois suisses et internationales sur la propriété intellectuelle. Vos données personnelles restent votre propriété.</p>
+      <h3 data-i18n="terms_h5">5. Propriété intellectuelle</h3>
+      <p data-i18n="terms_p5">OnTrack et tous ses éléments sont protégés par les lois suisses et internationales sur la propriété intellectuelle. Vos données personnelles restent votre propriété.</p>
 
-      <h3>6. Abonnements et paiements</h3>
-      <p>Gérés exclusivement via l'App Store d'Apple. Les conditions de facturation et remboursement sont régies par les conditions d'Apple. Nous ne traitons aucun paiement directement.</p>
+      <h3 data-i18n="terms_h6">6. Abonnements et paiements</h3>
+      <p data-i18n="terms_p6">Gérés exclusivement via l'App Store d'Apple. Les conditions de facturation et remboursement sont régies par les conditions d'Apple. Nous ne traitons aucun paiement directement.</p>
 
-      <h3>7. Disponibilité</h3>
-      <p>Nous visons une disponibilité continue mais ne la garantissons pas. Des interruptions pour maintenance peuvent survenir avec préavis raisonnable.</p>
+      <h3 data-i18n="terms_h7">7. Disponibilité</h3>
+      <p data-i18n="terms_p7">Nous visons une disponibilité continue mais ne la garantissons pas. Des interruptions pour maintenance peuvent survenir avec préavis raisonnable.</p>
 
-      <h3>8. Limitation de responsabilité</h3>
-      <p>Dans les limites permises par le droit suisse, OnTrack n'est pas responsable des dommages indirects, pertes de données ou décisions prises sur la base des données affichées.</p>
+      <h3 data-i18n="terms_h8">8. Limitation de responsabilité</h3>
+      <p data-i18n="terms_p8">Dans les limites permises par le droit suisse, OnTrack n'est pas responsable des dommages indirects, pertes de données ou décisions prises sur la base des données affichées.</p>
 
-      <h3>9. Modifications</h3>
-      <p>Toute modification substantielle vous sera notifiée 30 jours avant son entrée en vigueur.</p>
+      <h3 data-i18n="terms_h9">9. Modifications</h3>
+      <p data-i18n="terms_p9">Toute modification substantielle vous sera notifiée 30 jours avant son entrée en vigueur.</p>
 
-      <h3>10. Droit applicable</h3>
-      <p>Droit suisse. Juridiction : tribunaux de <strong>Genève, Suisse</strong>. Contact : <strong>legal@ontrack.app</strong></p>
+      <h3 data-i18n="terms_h10">10. Droit applicable</h3>
+      <p data-i18n-html="terms_p10">Droit suisse. Juridiction : tribunaux de <strong>Genève, Suisse</strong>. Contact : <strong>legal@ontrack.app</strong></p>
     </div>
   </div>
 </div>
 
 <script>
+  // ── TRANSLATIONS ──────────────────────────────────────────
+  const T = {
+    fr: {
+      ticker_slogan: "Le Strava de l'effort intellectuel",
+      ticker_avail: "Disponible sur App Store",
+      ticker_track: "Track your mind",
+      ticker_potential: "Mesure ton potentiel",
+      ticker_session: "Chaque session compte",
+      hero_label: "Application mobile — iOS",
+      hero_sub: "Transforme chaque session de travail<br>en données qui comptent vraiment.",
+      btn_download: "Télécharger — App Store",
+      hero_subnote: "Gratuit · iOS 16+",
+      strip_text: "Tu travailles.<br>Mais est-ce que<br>tu progresses\u00a0?",
+      pb_label: "Le problème",
+      pb_title: "L'effort invisible n'existe pas.",
+      pb_body: "Les athlètes trackent chaque kilomètre. Les étudiants, créateurs et pros du savoir travaillent dans le flou total — sans métriques, sans feedback. OnTrack change ça.",
+      cmp_before: "Sans OnTrack",
+      cmp_after: "Avec OnTrack",
+      cmp_b1: "Sessions estimées à la louche",
+      cmp_b2: "Aucun feedback sur ta concentration",
+      cmp_b3: "Progression invisible, non comparable",
+      cmp_b4: "Motivation fragile, sans preuve",
+      cmp_a1: "Sessions chronométrées et catégorisées",
+      cmp_a2: "Score de concentration en temps réel",
+      cmp_a3: "Graphes hebdomadaires et mensuels",
+      cmp_a4: "Streaks et objectifs personnalisés",
+      feat_label: "Fonctionnalités",
+      feat_title: "Ce que fait<br>OnTrack.",
+      feat_body: "Quatre piliers conçus pour rendre ton effort intellectuel aussi mesurable et motivant que l'entraînement physique.",
+      feat1_title: "Suivi en temps réel",
+      feat1_desc: "Lance une session en un tap. OnTrack mesure ta concentration active, détecte les interruptions et te donne un score à la fin. Simple. Précis.",
+      feat2_title: "Analyse de la concentration",
+      feat2_desc: "Courbe d'énergie, fenêtres de peak performance, moments à risque de décrochage — transformés en insights lisibles.",
+      feat3_title: "Objectifs personnalisés",
+      feat3_desc: "Définis tes cibles hebdomadaires par domaine. OnTrack te rappelle, t'encourage et te montre où tu déroges à ton plan.",
+      feat4_title: "Insights hebdomadaires",
+      feat4_desc: "Chaque lundi, un rapport arrive. Meilleures heures, domaine le plus travaillé, progression mois sur mois.",
+      caption_quote: "« La discipline, c'est se souvenir de ce que l'on veut vraiment. »",
+      stat1_lbl: "Sessions par jour",
+      stat2_lbl: "Concentration moyenne",
+      stat3_lbl: "Objectifs complétés",
+      stat4_lbl: "Utilisateurs actifs",
+      cta_title: "Commence à<br>te mesurer.",
+      cta_subnote: "Gratuit · Sans publicité · iOS 16+",
+      footer_sub: "Le Strava de l'effort intellectuel",
+      nav_privacy: "Politique de confidentialité",
+      nav_terms: "Conditions d'utilisation",
+      nav_dpo: "Contact DPO",
+      footer_copy: "© 2025 OnTrack. Tous droits réservés.",
+      footer_legal: "Droit suisse · LPD & RGPD",
+      modal_privacy_title: "Politique de confidentialité",
+      modal_terms_title: "Conditions d'utilisation",
+      modal_close: "Fermer",
+      modal_privacy_date: "Mise à jour — 01 janvier 2025",
+      modal_terms_date: "Mise à jour — 01 janvier 2025",
+      priv_h1: "1. Responsable du traitement",
+      priv_p1: "OnTrack est responsable du traitement de vos données personnelles. Contact : <strong>dpo@ontrack.app</strong>. Siège social : Genève, Suisse.",
+      priv_h2: "2. Données collectées",
+      priv_p2: "Nous collectons uniquement les données nécessaires au fonctionnement de l'application :",
+      priv_ul2: "<li>Données de compte : adresse e-mail, pseudonyme (si applicable)</li><li>Données d'usage : durée des sessions, catégories, scores de concentration</li><li>Données techniques : version iOS, type d'appareil, logs d'erreur anonymisés</li><li>Données de paiement : traitées exclusivement par Apple — nous n'y avons pas accès</li>",
+      priv_p2b: "Nous ne collectons <strong>jamais</strong> : localisation, contacts, photos, micro, caméra.",
+      priv_h3: "3. Bases légales",
+      priv_ul3: "<li><strong>Exécution du contrat</strong> (art. 6.1.b RGPD) — fonctionnement et synchronisation</li><li><strong>Intérêt légitime</strong> (art. 6.1.f RGPD) — analytics agrégés et anonymisés</li><li><strong>Consentement</strong> (art. 6.1.a RGPD) — notifications push si activées</li>",
+      priv_h4: "4. Conservation",
+      priv_p4: "Données conservées pendant la durée d'utilisation active, puis supprimées sous 30 jours après fermeture du compte. Logs techniques : 12 mois.",
+      priv_h5: "5. Partage",
+      priv_p5: "Nous ne vendons jamais vos données. Partage possible uniquement avec nos sous-traitants techniques (sous contrat strict) et les autorités compétentes sur obligation légale.",
+      priv_h6: "6. Transferts internationaux",
+      priv_p6: "Hébergement en Europe (UE). Tout transfert hors UE est encadré par les clauses contractuelles types de la Commission européenne.",
+      priv_h7: "7. Vos droits",
+      priv_p7: "Conformément au RGPD (art. 15–22) et à la nLPD suisse, vous disposez des droits d'accès, rectification, effacement, portabilité, opposition et limitation.",
+      priv_p7b: "Pour les exercer : <strong>dpo@ontrack.app</strong> — réponse sous 30 jours.",
+      priv_h8: "8. DPO",
+      priv_p8: "Délégué à la protection des données : <strong>dpo@ontrack.app</strong>. Autorité compétente : PFPDT (Suisse) ou CNIL (France).",
+      priv_h9: "9. Sécurité",
+      priv_p9: "Chiffrement en transit (TLS 1.3) et au repos (AES-256). Accès restreint au personnel nécessaire sous engagement de confidentialité.",
+      priv_h10: "10. Droit applicable",
+      priv_p10: "Droit suisse, nLPD (RS 235.1), et RGPD pour les utilisateurs résidant dans l'UE.",
+      terms_h1: "1. Acceptation",
+      terms_p1: "En téléchargeant ou utilisant OnTrack, vous acceptez les présentes conditions. Dans le cas contraire, veuillez ne pas utiliser l'application.",
+      terms_h2: "2. Service",
+      terms_p2: "OnTrack est une application mobile de suivi de l'effort intellectuel permettant de mesurer, analyser et visualiser vos sessions de travail. Certaines fonctionnalités avancées nécessitent un abonnement payant.",
+      terms_h3: "3. Compte utilisateur",
+      terms_p3: "Vous êtes responsable de la confidentialité de vos identifiants. Vous vous engagez à fournir des informations exactes, maintenir la sécurité de vos accès et nous notifier de tout accès non autorisé.",
+      terms_h4: "4. Utilisation acceptable",
+      terms_p4: "Usage exclusivement légal et conforme aux présentes conditions. Sont notamment interdits : compromettre la sécurité de l'application, reproduire ou vendre le service, utiliser des robots automatisés, usurper une identité.",
+      terms_h5: "5. Propriété intellectuelle",
+      terms_p5: "OnTrack et tous ses éléments sont protégés par les lois suisses et internationales sur la propriété intellectuelle. Vos données personnelles restent votre propriété.",
+      terms_h6: "6. Abonnements et paiements",
+      terms_p6: "Gérés exclusivement via l'App Store d'Apple. Les conditions de facturation et remboursement sont régies par les conditions d'Apple. Nous ne traitons aucun paiement directement.",
+      terms_h7: "7. Disponibilité",
+      terms_p7: "Nous visons une disponibilité continue mais ne la garantissons pas. Des interruptions pour maintenance peuvent survenir avec préavis raisonnable.",
+      terms_h8: "8. Limitation de responsabilité",
+      terms_p8: "Dans les limites permises par le droit suisse, OnTrack n'est pas responsable des dommages indirects, pertes de données ou décisions prises sur la base des données affichées.",
+      terms_h9: "9. Modifications",
+      terms_p9: "Toute modification substantielle vous sera notifiée 30 jours avant son entrée en vigueur.",
+      terms_h10: "10. Droit applicable",
+      terms_p10: "Droit suisse. Juridiction : tribunaux de <strong>Genève, Suisse</strong>. Contact : <strong>legal@ontrack.app</strong>",
+    },
+    en: {
+      ticker_slogan: "The Strava of intellectual effort",
+      ticker_avail: "Available on App Store",
+      ticker_track: "Track your mind",
+      ticker_potential: "Measure your potential",
+      ticker_session: "Every session counts",
+      hero_label: "Mobile App — iOS",
+      hero_sub: "Turn every work session<br>into data that truly matters.",
+      btn_download: "Download — App Store",
+      hero_subnote: "Free · iOS 16+",
+      strip_text: "You work hard.<br>But are you<br>actually progressing?",
+      pb_label: "The problem",
+      pb_title: "Invisible effort doesn't exist.",
+      pb_body: "Athletes track every kilometre. Students, creators and knowledge workers operate in total blur — no metrics, no feedback. OnTrack changes that.",
+      cmp_before: "Without OnTrack",
+      cmp_after: "With OnTrack",
+      cmp_b1: "Sessions roughly estimated",
+      cmp_b2: "No feedback on your focus",
+      cmp_b3: "Invisible, incomparable progress",
+      cmp_b4: "Fragile motivation, no proof",
+      cmp_a1: "Timed and categorised sessions",
+      cmp_a2: "Real-time focus score",
+      cmp_a3: "Weekly and monthly graphs",
+      cmp_a4: "Streaks and personalised goals",
+      feat_label: "Features",
+      feat_title: "What OnTrack<br>does.",
+      feat_body: "Four pillars designed to make your intellectual effort as measurable and motivating as physical training.",
+      feat1_title: "Real-time tracking",
+      feat1_desc: "Start a session in one tap. OnTrack measures your active focus, detects interruptions and gives you a score at the end. Simple. Precise.",
+      feat2_title: "Focus analysis",
+      feat2_desc: "Energy curve, peak performance windows, dropout risk moments — turned into readable insights.",
+      feat3_title: "Personalised goals",
+      feat3_desc: "Set your weekly targets by domain. OnTrack reminds you, encourages you and shows you where you deviate from your plan.",
+      feat4_title: "Weekly insights",
+      feat4_desc: "Every Monday, a report arrives. Best hours, most worked domain, month-on-month progress.",
+      caption_quote: "\"Discipline is remembering what you really want.\"",
+      stat1_lbl: "Sessions per day",
+      stat2_lbl: "Average focus",
+      stat3_lbl: "Goals completed",
+      stat4_lbl: "Active users",
+      cta_title: "Start<br>measuring yourself.",
+      cta_subnote: "Free · Ad-free · iOS 16+",
+      footer_sub: "The Strava of intellectual effort",
+      nav_privacy: "Privacy Policy",
+      nav_terms: "Terms of Use",
+      nav_dpo: "Contact DPO",
+      footer_copy: "© 2025 OnTrack. All rights reserved.",
+      footer_legal: "Swiss law · nFADP & GDPR",
+      modal_privacy_title: "Privacy Policy",
+      modal_terms_title: "Terms of Use",
+      modal_close: "Close",
+      modal_privacy_date: "Updated — 01 January 2025",
+      modal_terms_date: "Updated — 01 January 2025",
+      priv_h1: "1. Data controller",
+      priv_p1: "OnTrack is responsible for processing your personal data. Contact: <strong>dpo@ontrack.app</strong>. Registered office: Geneva, Switzerland.",
+      priv_h2: "2. Data collected",
+      priv_p2: "We only collect data necessary for the app to function:",
+      priv_ul2: "<li>Account data: email address, username (if applicable)</li><li>Usage data: session duration, categories, focus scores</li><li>Technical data: iOS version, device type, anonymised error logs</li><li>Payment data: processed exclusively by Apple — we have no access</li>",
+      priv_p2b: "We <strong>never</strong> collect: location, contacts, photos, microphone, camera.",
+      priv_h3: "3. Legal bases",
+      priv_ul3: "<li><strong>Contract performance</strong> (art. 6.1.b GDPR) — app operation and sync</li><li><strong>Legitimate interest</strong> (art. 6.1.f GDPR) — aggregated anonymous analytics</li><li><strong>Consent</strong> (art. 6.1.a GDPR) — push notifications if enabled</li>",
+      priv_h4: "4. Retention",
+      priv_p4: "Data retained for the duration of active use, then deleted within 30 days of account closure. Technical logs: 12 months.",
+      priv_h5: "5. Sharing",
+      priv_p5: "We never sell your data. Sharing only with our technical sub-processors (under strict contract) and competent authorities when legally required.",
+      priv_h6: "6. International transfers",
+      priv_p6: "Hosted in Europe (EU). Any transfer outside the EU is governed by the European Commission's standard contractual clauses.",
+      priv_h7: "7. Your rights",
+      priv_p7: "Under GDPR (art. 15–22) and the Swiss nFADP, you have rights of access, rectification, erasure, portability, objection and restriction.",
+      priv_p7b: "To exercise them: <strong>dpo@ontrack.app</strong> — response within 30 days.",
+      priv_h8: "8. DPO",
+      priv_p8: "Data Protection Officer: <strong>dpo@ontrack.app</strong>. Supervisory authority: FDPIC (Switzerland) or CNIL (France).",
+      priv_h9: "9. Security",
+      priv_p9: "Encryption in transit (TLS 1.3) and at rest (AES-256). Access restricted to necessary staff under confidentiality agreements.",
+      priv_h10: "10. Applicable law",
+      priv_p10: "Swiss law, nFADP (SR 235.1), and GDPR for users residing in the EU.",
+      terms_h1: "1. Acceptance",
+      terms_p1: "By downloading or using OnTrack, you agree to these terms. If you do not agree, please do not use the application.",
+      terms_h2: "2. Service",
+      terms_p2: "OnTrack is a mobile app for tracking intellectual effort, allowing you to measure, analyse and visualise your work sessions. Some advanced features require a paid subscription.",
+      terms_h3: "3. User account",
+      terms_p3: "You are responsible for keeping your credentials confidential. You agree to provide accurate information, maintain the security of your access and notify us of any unauthorised access.",
+      terms_h4: "4. Acceptable use",
+      terms_p4: "Use exclusively for lawful purposes in accordance with these terms. Prohibited actions include: compromising app security, reproducing or selling the service, using automated bots, impersonating others.",
+      terms_h5: "5. Intellectual property",
+      terms_p5: "OnTrack and all its elements are protected by Swiss and international intellectual property laws. Your personal data remains your property.",
+      terms_h6: "6. Subscriptions and payments",
+      terms_p6: "Managed exclusively via Apple's App Store. Billing and refund conditions are governed by Apple's terms. We process no payments directly.",
+      terms_h7: "7. Availability",
+      terms_p7: "We aim for continuous availability but do not guarantee it. Maintenance interruptions may occur with reasonable notice.",
+      terms_h8: "8. Limitation of liability",
+      terms_p8: "To the extent permitted by Swiss law, OnTrack is not liable for indirect damages, data loss or decisions made based on displayed data.",
+      terms_h9: "9. Modifications",
+      terms_p9: "Any substantial modification will be notified to you 30 days before it takes effect.",
+      terms_h10: "10. Applicable law",
+      terms_p10: "Swiss law. Jurisdiction: courts of <strong>Geneva, Switzerland</strong>. Contact: <strong>legal@ontrack.app</strong>",
+    },
+    de: {
+      ticker_slogan: "Das Strava der geistigen Leistung",
+      ticker_avail: "Im App Store verfügbar",
+      ticker_track: "Verfolge deinen Geist",
+      ticker_potential: "Miss dein Potenzial",
+      ticker_session: "Jede Sitzung zählt",
+      hero_label: "Mobile App — iOS",
+      hero_sub: "Verwandle jede Arbeitssession<br>in wertvolle Daten.",
+      btn_download: "Herunterladen — App Store",
+      hero_subnote: "Kostenlos · iOS 16+",
+      strip_text: "Du arbeitest.<br>Aber machst du<br>wirklich Fortschritte?",
+      pb_label: "Das Problem",
+      pb_title: "Unsichtbare Leistung existiert nicht.",
+      pb_body: "Athleten tracken jeden Kilometer. Studierende, Kreative und Wissensarbeiter arbeiten im völligen Blindflug — ohne Metriken, ohne Feedback. OnTrack ändert das.",
+      cmp_before: "Ohne OnTrack",
+      cmp_after: "Mit OnTrack",
+      cmp_b1: "Sitzungen grob geschätzt",
+      cmp_b2: "Kein Feedback zu deiner Konzentration",
+      cmp_b3: "Unsichtbarer, nicht vergleichbarer Fortschritt",
+      cmp_b4: "Zerbrechliche Motivation, kein Beweis",
+      cmp_a1: "Zeitgemessene und kategorisierte Sitzungen",
+      cmp_a2: "Echtzeit-Konzentrationswert",
+      cmp_a3: "Wöchentliche und monatliche Grafiken",
+      cmp_a4: "Streaks und personalisierte Ziele",
+      feat_label: "Funktionen",
+      feat_title: "Was OnTrack<br>kann.",
+      feat_body: "Vier Säulen, die deinen intellektuellen Einsatz genauso messbar und motivierend machen wie körperliches Training.",
+      feat1_title: "Echtzeit-Tracking",
+      feat1_desc: "Starte eine Sitzung mit einem Tap. OnTrack misst deine aktive Konzentration, erkennt Unterbrechungen und gibt dir am Ende eine Bewertung. Einfach. Präzise.",
+      feat2_title: "Konzentrationsanalyse",
+      feat2_desc: "Energiekurve, Peak-Performance-Fenster, Abbruchrisiko-Momente — verwandelt in lesbare Einblicke.",
+      feat3_title: "Personalisierte Ziele",
+      feat3_desc: "Lege deine wöchentlichen Ziele nach Bereich fest. OnTrack erinnert dich, ermutigt dich und zeigt dir, wo du von deinem Plan abweichst.",
+      feat4_title: "Wöchentliche Einblicke",
+      feat4_desc: "Jeden Montag kommt ein Bericht. Beste Stunden, am meisten gearbeiteter Bereich, Fortschritt Monat für Monat.",
+      caption_quote: "„Disziplin bedeutet, sich an das zu erinnern, was man wirklich will."",
+      stat1_lbl: "Sitzungen pro Tag",
+      stat2_lbl: "Durchschnittliche Konzentration",
+      stat3_lbl: "Ziele erreicht",
+      stat4_lbl: "Aktive Nutzer",
+      cta_title: "Fang an,<br>dich zu messen.",
+      cta_subnote: "Kostenlos · Werbefrei · iOS 16+",
+      footer_sub: "Das Strava der geistigen Leistung",
+      nav_privacy: "Datenschutzrichtlinie",
+      nav_terms: "Nutzungsbedingungen",
+      nav_dpo: "DPO kontaktieren",
+      footer_copy: "© 2025 OnTrack. Alle Rechte vorbehalten.",
+      footer_legal: "Schweizer Recht · DSG & DSGVO",
+      modal_privacy_title: "Datenschutzrichtlinie",
+      modal_terms_title: "Nutzungsbedingungen",
+      modal_close: "Schließen",
+      modal_privacy_date: "Aktualisiert — 01. Januar 2025",
+      modal_terms_date: "Aktualisiert — 01. Januar 2025",
+      priv_h1: "1. Verantwortlicher",
+      priv_p1: "OnTrack ist verantwortlich für die Verarbeitung Ihrer personenbezogenen Daten. Kontakt: <strong>dpo@ontrack.app</strong>. Sitz: Genf, Schweiz.",
+      priv_h2: "2. Erhobene Daten",
+      priv_p2: "Wir erheben nur die für den Betrieb der App notwendigen Daten:",
+      priv_ul2: "<li>Kontodaten: E-Mail-Adresse, Benutzername (falls zutreffend)</li><li>Nutzungsdaten: Sitzungsdauer, Kategorien, Konzentrationswerte</li><li>Technische Daten: iOS-Version, Gerätetyp, anonymisierte Fehlerprotokolle</li><li>Zahlungsdaten: ausschließlich von Apple verarbeitet — wir haben keinen Zugriff</li>",
+      priv_p2b: "Wir erheben <strong>niemals</strong>: Standort, Kontakte, Fotos, Mikrofon, Kamera.",
+      priv_h3: "3. Rechtsgrundlagen",
+      priv_ul3: "<li><strong>Vertragserfüllung</strong> (Art. 6.1.b DSGVO) — App-Betrieb und Synchronisierung</li><li><strong>Berechtigtes Interesse</strong> (Art. 6.1.f DSGVO) — aggregierte anonyme Analysen</li><li><strong>Einwilligung</strong> (Art. 6.1.a DSGVO) — Push-Benachrichtigungen, falls aktiviert</li>",
+      priv_h4: "4. Speicherung",
+      priv_p4: "Daten werden für die Dauer der aktiven Nutzung gespeichert, dann innerhalb von 30 Tagen nach Kontoschließung gelöscht. Technische Protokolle: 12 Monate.",
+      priv_h5: "5. Weitergabe",
+      priv_p5: "Wir verkaufen Ihre Daten niemals. Weitergabe nur an technische Auftragsverarbeiter (unter strengem Vertrag) und zuständige Behörden bei gesetzlicher Verpflichtung.",
+      priv_h6: "6. Internationale Übermittlungen",
+      priv_p6: "Hosting in Europa (EU). Jede Übermittlung außerhalb der EU unterliegt den Standardvertragsklauseln der Europäischen Kommission.",
+      priv_h7: "7. Ihre Rechte",
+      priv_p7: "Gemäß DSGVO (Art. 15–22) und dem Schweizer DSG haben Sie Rechte auf Auskunft, Berichtigung, Löschung, Übertragbarkeit, Widerspruch und Einschränkung.",
+      priv_p7b: "Zur Ausübung: <strong>dpo@ontrack.app</strong> — Antwort innerhalb von 30 Tagen.",
+      priv_h8: "8. Datenschutzbeauftragter",
+      priv_p8: "Datenschutzbeauftragter: <strong>dpo@ontrack.app</strong>. Zuständige Behörde: EDÖB (Schweiz) oder CNIL (Frankreich).",
+      priv_h9: "9. Sicherheit",
+      priv_p9: "Verschlüsselung während der Übertragung (TLS 1.3) und im Ruhezustand (AES-256). Zugang nur für erforderliches Personal unter Vertraulichkeitsverpflichtung.",
+      priv_h10: "10. Anwendbares Recht",
+      priv_p10: "Schweizer Recht, DSG (SR 235.1) und DSGVO für Nutzer mit Wohnsitz in der EU.",
+      terms_h1: "1. Annahme",
+      terms_p1: "Durch das Herunterladen oder Verwenden von OnTrack stimmen Sie diesen Bedingungen zu. Andernfalls verwenden Sie die App bitte nicht.",
+      terms_h2: "2. Dienst",
+      terms_p2: "OnTrack ist eine mobile App zur Verfolgung intellektueller Leistung, mit der Sie Ihre Arbeitssitzungen messen, analysieren und visualisieren können. Einige erweiterte Funktionen erfordern ein kostenpflichtiges Abonnement.",
+      terms_h3: "3. Benutzerkonto",
+      terms_p3: "Sie sind für die Vertraulichkeit Ihrer Zugangsdaten verantwortlich. Sie verpflichten sich, genaue Angaben zu machen, die Sicherheit Ihrer Zugänge zu wahren und uns über unbefugte Zugriffe zu informieren.",
+      terms_h4: "4. Zulässige Nutzung",
+      terms_p4: "Ausschließlich gesetzeskonforme Nutzung gemäß diesen Bedingungen. Insbesondere verboten sind: die Sicherheit der App gefährden, den Dienst reproduzieren oder verkaufen, automatisierte Bots verwenden, Identitäten usurpieren.",
+      terms_h5: "5. Geistiges Eigentum",
+      terms_p5: "OnTrack und alle seine Elemente sind durch Schweizer und internationales Recht zum geistigen Eigentum geschützt. Ihre persönlichen Daten bleiben Ihr Eigentum.",
+      terms_h6: "6. Abonnements und Zahlungen",
+      terms_p6: "Ausschließlich über Apples App Store verwaltet. Abrechnungs- und Rückerstattungsbedingungen richten sich nach Apples Bedingungen. Wir verarbeiten keine Zahlungen direkt.",
+      terms_h7: "7. Verfügbarkeit",
+      terms_p7: "Wir streben kontinuierliche Verfügbarkeit an, garantieren sie jedoch nicht. Wartungsunterbrechungen können mit angemessener Vorankündigung auftreten.",
+      terms_h8: "8. Haftungsbeschränkung",
+      terms_p8: "Im Rahmen des Schweizer Rechts haftet OnTrack nicht für indirekte Schäden, Datenverluste oder Entscheidungen, die auf der Grundlage angezeigter Daten getroffen wurden.",
+      terms_h9: "9. Änderungen",
+      terms_p9: "Wesentliche Änderungen werden Ihnen 30 Tage vor Inkrafttreten mitgeteilt.",
+      terms_h10: "10. Anwendbares Recht",
+      terms_p10: "Schweizer Recht. Gerichtsstand: Gerichte von <strong>Genf, Schweiz</strong>. Kontakt: <strong>legal@ontrack.app</strong>",
+    },
+    it: {
+      ticker_slogan: "Lo Strava dello sforzo intellettuale",
+      ticker_avail: "Disponibile su App Store",
+      ticker_track: "Traccia la tua mente",
+      ticker_potential: "Misura il tuo potenziale",
+      ticker_session: "Ogni sessione conta",
+      hero_label: "App mobile — iOS",
+      hero_sub: "Trasforma ogni sessione di lavoro<br>in dati che contano davvero.",
+      btn_download: "Scarica — App Store",
+      hero_subnote: "Gratuito · iOS 16+",
+      strip_text: "Lavori.<br>Ma stai davvero<br>progredendo?",
+      pb_label: "Il problema",
+      pb_title: "Lo sforzo invisibile non esiste.",
+      pb_body: "Gli atleti tracciano ogni chilometro. Studenti, creativi e professionisti della conoscenza lavorano nel buio totale — senza metriche, senza feedback. OnTrack cambia tutto.",
+      cmp_before: "Senza OnTrack",
+      cmp_after: "Con OnTrack",
+      cmp_b1: "Sessioni stimate approssimativamente",
+      cmp_b2: "Nessun feedback sulla tua concentrazione",
+      cmp_b3: "Progresso invisibile, non comparabile",
+      cmp_b4: "Motivazione fragile, senza prove",
+      cmp_a1: "Sessioni cronometrate e categorizzate",
+      cmp_a2: "Punteggio di concentrazione in tempo reale",
+      cmp_a3: "Grafici settimanali e mensili",
+      cmp_a4: "Streak e obiettivi personalizzati",
+      feat_label: "Funzionalità",
+      feat_title: "Cosa fa<br>OnTrack.",
+      feat_body: "Quattro pilastri progettati per rendere il tuo sforzo intellettuale misurabile e motivante quanto l'allenamento fisico.",
+      feat1_title: "Monitoraggio in tempo reale",
+      feat1_desc: "Avvia una sessione con un tap. OnTrack misura la tua concentrazione attiva, rileva le interruzioni e ti dà un punteggio alla fine. Semplice. Preciso.",
+      feat2_title: "Analisi della concentrazione",
+      feat2_desc: "Curva energetica, finestre di picco prestazione, momenti a rischio di abbandono — trasformati in insight leggibili.",
+      feat3_title: "Obiettivi personalizzati",
+      feat3_desc: "Definisci i tuoi obiettivi settimanali per dominio. OnTrack ti ricorda, ti incoraggia e ti mostra dove ti discosti dal tuo piano.",
+      feat4_title: "Insight settimanali",
+      feat4_desc: "Ogni lunedì arriva un report. Ore migliori, dominio più lavorato, progresso mese su mese.",
+      caption_quote: "«La disciplina è ricordarsi di ciò che si vuole davvero.»",
+      stat1_lbl: "Sessioni al giorno",
+      stat2_lbl: "Concentrazione media",
+      stat3_lbl: "Obiettivi completati",
+      stat4_lbl: "Utenti attivi",
+      cta_title: "Inizia a<br>misurarti.",
+      cta_subnote: "Gratuito · Senza pubblicità · iOS 16+",
+      footer_sub: "Lo Strava dello sforzo intellettuale",
+      nav_privacy: "Politica sulla privacy",
+      nav_terms: "Termini di utilizzo",
+      nav_dpo: "Contatta DPO",
+      footer_copy: "© 2025 OnTrack. Tutti i diritti riservati.",
+      footer_legal: "Diritto svizzero · LPD & RGPD",
+      modal_privacy_title: "Politica sulla privacy",
+      modal_terms_title: "Termini di utilizzo",
+      modal_close: "Chiudi",
+      modal_privacy_date: "Aggiornato — 01 gennaio 2025",
+      modal_terms_date: "Aggiornato — 01 gennaio 2025",
+      priv_h1: "1. Titolare del trattamento",
+      priv_p1: "OnTrack è responsabile del trattamento dei tuoi dati personali. Contatto: <strong>dpo@ontrack.app</strong>. Sede: Ginevra, Svizzera.",
+      priv_h2: "2. Dati raccolti",
+      priv_p2: "Raccogliamo solo i dati necessari al funzionamento dell'app:",
+      priv_ul2: "<li>Dati account: indirizzo e-mail, nome utente (se applicabile)</li><li>Dati d'uso: durata sessioni, categorie, punteggi di concentrazione</li><li>Dati tecnici: versione iOS, tipo di dispositivo, log errori anonimizzati</li><li>Dati di pagamento: gestiti esclusivamente da Apple — non vi abbiamo accesso</li>",
+      priv_p2b: "Non raccogliamo <strong>mai</strong>: posizione, contatti, foto, microfono, fotocamera.",
+      priv_h3: "3. Basi legali",
+      priv_ul3: "<li><strong>Esecuzione del contratto</strong> (art. 6.1.b RGPD) — funzionamento e sincronizzazione</li><li><strong>Interesse legittimo</strong> (art. 6.1.f RGPD) — analisi aggregate e anonimizzate</li><li><strong>Consenso</strong> (art. 6.1.a RGPD) — notifiche push se attivate</li>",
+      priv_h4: "4. Conservazione",
+      priv_p4: "Dati conservati per la durata dell'utilizzo attivo, poi eliminati entro 30 giorni dalla chiusura dell'account. Log tecnici: 12 mesi.",
+      priv_h5: "5. Condivisione",
+      priv_p5: "Non vendiamo mai i tuoi dati. Condivisione solo con i nostri sub-responsabili tecnici (sotto contratto rigoroso) e le autorità competenti su obbligo legale.",
+      priv_h6: "6. Trasferimenti internazionali",
+      priv_p6: "Hosting in Europa (UE). Qualsiasi trasferimento fuori UE è disciplinato dalle clausole contrattuali standard della Commissione europea.",
+      priv_h7: "7. I tuoi diritti",
+      priv_p7: "Ai sensi del RGPD (art. 15–22) e della nLPD svizzera, hai diritti di accesso, rettifica, cancellazione, portabilità, opposizione e limitazione.",
+      priv_p7b: "Per esercitarli: <strong>dpo@ontrack.app</strong> — risposta entro 30 giorni.",
+      priv_h8: "8. DPO",
+      priv_p8: "Responsabile della protezione dei dati: <strong>dpo@ontrack.app</strong>. Autorità competente: IFPDT (Svizzera) o CNIL (Francia).",
+      priv_h9: "9. Sicurezza",
+      priv_p9: "Crittografia in transito (TLS 1.3) e a riposo (AES-256). Accesso limitato al personale necessario sotto impegno di riservatezza.",
+      priv_h10: "10. Legge applicabile",
+      priv_p10: "Diritto svizzero, nLPD (RS 235.1) e RGPD per gli utenti residenti nell'UE.",
+      terms_h1: "1. Accettazione",
+      terms_p1: "Scaricando o utilizzando OnTrack, accetti le presenti condizioni. In caso contrario, ti preghiamo di non utilizzare l'applicazione.",
+      terms_h2: "2. Servizio",
+      terms_p2: "OnTrack è un'app mobile per il monitoraggio dello sforzo intellettuale che permette di misurare, analizzare e visualizzare le tue sessioni di lavoro. Alcune funzionalità avanzate richiedono un abbonamento a pagamento.",
+      terms_h3: "3. Account utente",
+      terms_p3: "Sei responsabile della riservatezza delle tue credenziali. Ti impegni a fornire informazioni accurate, mantenere la sicurezza dei tuoi accessi e notificarci qualsiasi accesso non autorizzato.",
+      terms_h4: "4. Uso accettabile",
+      terms_p4: "Uso esclusivamente legale e conforme alle presenti condizioni. Sono vietati: compromettere la sicurezza dell'app, riprodurre o vendere il servizio, utilizzare bot automatizzati, usurpare un'identità.",
+      terms_h5: "5. Proprietà intellettuale",
+      terms_p5: "OnTrack e tutti i suoi elementi sono protetti dalle leggi svizzere e internazionali sulla proprietà intellettuale. I tuoi dati personali rimangono di tua proprietà.",
+      terms_h6: "6. Abbonamenti e pagamenti",
+      terms_p6: "Gestiti esclusivamente tramite l'App Store di Apple. Le condizioni di fatturazione e rimborso sono disciplinate dalle condizioni di Apple. Non elaboriamo pagamenti direttamente.",
+      terms_h7: "7. Disponibilità",
+      terms_p7: "Puntiamo a una disponibilità continua ma non la garantiamo. Interruzioni per manutenzione possono verificarsi con ragionevole preavviso.",
+      terms_h8: "8. Limitazione di responsabilità",
+      terms_p8: "Nei limiti consentiti dal diritto svizzero, OnTrack non è responsabile di danni indiretti, perdita di dati o decisioni prese sulla base dei dati visualizzati.",
+      terms_h9: "9. Modifiche",
+      terms_p9: "Qualsiasi modifica sostanziale ti sarà notificata 30 giorni prima della sua entrata in vigore.",
+      terms_h10: "10. Legge applicabile",
+      terms_p10: "Diritto svizzero. Giurisdizione: tribunali di <strong>Ginevra, Svizzera</strong>. Contatto: <strong>legal@ontrack.app</strong>",
+    },
+    es: {
+      ticker_slogan: "El Strava del esfuerzo intelectual",
+      ticker_avail: "Disponible en App Store",
+      ticker_track: "Rastrea tu mente",
+      ticker_potential: "Mide tu potencial",
+      ticker_session: "Cada sesión cuenta",
+      hero_label: "Aplicación móvil — iOS",
+      hero_sub: "Convierte cada sesión de trabajo<br>en datos que realmente importan.",
+      btn_download: "Descargar — App Store",
+      hero_subnote: "Gratis · iOS 16+",
+      strip_text: "Trabajas.<br>¿Pero estás<br>realmente progresando?",
+      pb_label: "El problema",
+      pb_title: "El esfuerzo invisible no existe.",
+      pb_body: "Los atletas rastrean cada kilómetro. Los estudiantes, creativos y profesionales del conocimiento trabajan en total oscuridad — sin métricas, sin retroalimentación. OnTrack lo cambia.",
+      cmp_before: "Sin OnTrack",
+      cmp_after: "Con OnTrack",
+      cmp_b1: "Sesiones estimadas a ojo",
+      cmp_b2: "Sin retroalimentación sobre tu concentración",
+      cmp_b3: "Progreso invisible, no comparable",
+      cmp_b4: "Motivación frágil, sin prueba",
+      cmp_a1: "Sesiones cronometradas y categorizadas",
+      cmp_a2: "Puntuación de concentración en tiempo real",
+      cmp_a3: "Gráficos semanales y mensuales",
+      cmp_a4: "Rachas y objetivos personalizados",
+      feat_label: "Funcionalidades",
+      feat_title: "Lo que hace<br>OnTrack.",
+      feat_body: "Cuatro pilares diseñados para hacer tu esfuerzo intelectual tan medible y motivador como el entrenamiento físico.",
+      feat1_title: "Seguimiento en tiempo real",
+      feat1_desc: "Inicia una sesión con un tap. OnTrack mide tu concentración activa, detecta interrupciones y te da una puntuación al final. Simple. Preciso.",
+      feat2_title: "Análisis de concentración",
+      feat2_desc: "Curva de energía, ventanas de máximo rendimiento, momentos de riesgo de abandono — convertidos en insights legibles.",
+      feat3_title: "Objetivos personalizados",
+      feat3_desc: "Define tus objetivos semanales por dominio. OnTrack te recuerda, te anima y te muestra dónde te desvías de tu plan.",
+      feat4_title: "Insights semanales",
+      feat4_desc: "Cada lunes llega un informe. Mejores horas, dominio más trabajado, progreso mes a mes.",
+      caption_quote: "«La disciplina es recordar lo que realmente quieres.»",
+      stat1_lbl: "Sesiones por día",
+      stat2_lbl: "Concentración promedio",
+      stat3_lbl: "Objetivos completados",
+      stat4_lbl: "Usuarios activos",
+      cta_title: "Empieza a<br>medirte.",
+      cta_subnote: "Gratis · Sin publicidad · iOS 16+",
+      footer_sub: "El Strava del esfuerzo intelectual",
+      nav_privacy: "Política de privacidad",
+      nav_terms: "Condiciones de uso",
+      nav_dpo: "Contacto DPO",
+      footer_copy: "© 2025 OnTrack. Todos los derechos reservados.",
+      footer_legal: "Derecho suizo · LPD & RGPD",
+      modal_privacy_title: "Política de privacidad",
+      modal_terms_title: "Condiciones de uso",
+      modal_close: "Cerrar",
+      modal_privacy_date: "Actualizado — 01 enero 2025",
+      modal_terms_date: "Actualizado — 01 enero 2025",
+      priv_h1: "1. Responsable del tratamiento",
+      priv_p1: "OnTrack es responsable del tratamiento de sus datos personales. Contacto: <strong>dpo@ontrack.app</strong>. Domicilio social: Ginebra, Suiza.",
+      priv_h2: "2. Datos recopilados",
+      priv_p2: "Solo recopilamos los datos necesarios para el funcionamiento de la aplicación:",
+      priv_ul2: "<li>Datos de cuenta: dirección de correo electrónico, nombre de usuario (si procede)</li><li>Datos de uso: duración de sesiones, categorías, puntuaciones de concentración</li><li>Datos técnicos: versión iOS, tipo de dispositivo, registros de errores anonimizados</li><li>Datos de pago: gestionados exclusivamente por Apple — no tenemos acceso</li>",
+      priv_p2b: "Nunca recopilamos <strong>nunca</strong>: ubicación, contactos, fotos, micrófono, cámara.",
+      priv_h3: "3. Bases legales",
+      priv_ul3: "<li><strong>Ejecución del contrato</strong> (art. 6.1.b RGPD) — funcionamiento y sincronización</li><li><strong>Interés legítimo</strong> (art. 6.1.f RGPD) — análisis agregados y anonimizados</li><li><strong>Consentimiento</strong> (art. 6.1.a RGPD) — notificaciones push si están activadas</li>",
+      priv_h4: "4. Conservación",
+      priv_p4: "Datos conservados durante el período de uso activo, luego eliminados en 30 días tras el cierre de la cuenta. Registros técnicos: 12 meses.",
+      priv_h5: "5. Compartición",
+      priv_p5: "Nunca vendemos sus datos. Solo se comparten con nuestros subcontratistas técnicos (bajo contrato estricto) y las autoridades competentes por obligación legal.",
+      priv_h6: "6. Transferencias internacionales",
+      priv_p6: "Alojamiento en Europa (UE). Cualquier transferencia fuera de la UE está regida por las cláusulas contractuales tipo de la Comisión Europea.",
+      priv_h7: "7. Sus derechos",
+      priv_p7: "De conformidad con el RGPD (art. 15–22) y la nLPD suiza, tiene derechos de acceso, rectificación, supresión, portabilidad, oposición y limitación.",
+      priv_p7b: "Para ejercerlos: <strong>dpo@ontrack.app</strong> — respuesta en 30 días.",
+      priv_h8: "8. DPO",
+      priv_p8: "Delegado de Protección de Datos: <strong>dpo@ontrack.app</strong>. Autoridad competente: PFPDT (Suiza) o CNIL (Francia).",
+      priv_h9: "9. Seguridad",
+      priv_p9: "Cifrado en tránsito (TLS 1.3) y en reposo (AES-256). Acceso restringido al personal necesario bajo compromiso de confidencialidad.",
+      priv_h10: "10. Ley aplicable",
+      priv_p10: "Derecho suizo, nLPD (RS 235.1) y RGPD para usuarios residentes en la UE.",
+      terms_h1: "1. Aceptación",
+      terms_p1: "Al descargar o utilizar OnTrack, acepta las presentes condiciones. En caso contrario, le rogamos que no utilice la aplicación.",
+      terms_h2: "2. Servicio",
+      terms_p2: "OnTrack es una aplicación móvil de seguimiento del esfuerzo intelectual que permite medir, analizar y visualizar sus sesiones de trabajo. Algunas funciones avanzadas requieren una suscripción de pago.",
+      terms_h3: "3. Cuenta de usuario",
+      terms_p3: "Es responsable de la confidencialidad de sus credenciales. Se compromete a proporcionar información exacta, mantener la seguridad de sus accesos y notificarnos cualquier acceso no autorizado.",
+      terms_h4: "4. Uso aceptable",
+      terms_p4: "Uso exclusivamente legal y conforme a las presentes condiciones. En particular están prohibidos: comprometer la seguridad de la aplicación, reproducir o vender el servicio, utilizar robots automatizados, suplantar una identidad.",
+      terms_h5: "5. Propiedad intelectual",
+      terms_p5: "OnTrack y todos sus elementos están protegidos por las leyes suizas e internacionales sobre propiedad intelectual. Sus datos personales siguen siendo de su propiedad.",
+      terms_h6: "6. Suscripciones y pagos",
+      terms_p6: "Gestionados exclusivamente a través de App Store de Apple. Las condiciones de facturación y reembolso se rigen por las condiciones de Apple. No procesamos ningún pago directamente.",
+      terms_h7: "7. Disponibilidad",
+      terms_p7: "Aspiramos a una disponibilidad continua pero no la garantizamos. Pueden producirse interrupciones por mantenimiento con aviso razonable.",
+      terms_h8: "8. Limitación de responsabilidad",
+      terms_p8: "En la medida permitida por el derecho suizo, OnTrack no es responsable de daños indirectos, pérdida de datos o decisiones tomadas en base a los datos mostrados.",
+      terms_h9: "9. Modificaciones",
+      terms_p9: "Cualquier modificación sustancial le será notificada 30 días antes de su entrada en vigor.",
+      terms_h10: "10. Ley aplicable",
+      terms_p10: "Derecho suizo. Jurisdicción: tribunales de <strong>Ginebra, Suiza</strong>. Contacto: <strong>legal@ontrack.app</strong>",
+    }
+  };
+
+  let currentLang = 'fr';
+
+  function applyLang(lang) {
+    const t = T[lang];
+    if (!t) return;
+    currentLang = lang;
+    // text content
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.dataset.i18n;
+      if (t[key] !== undefined) el.textContent = t[key];
+    });
+    // html content (for elements with <br> etc)
+    document.querySelectorAll('[data-i18n-html]').forEach(el => {
+      const key = el.dataset.i18nHtml;
+      if (t[key] !== undefined) el.innerHTML = t[key];
+    });
+    // update lang button label
+    document.getElementById('lang-current').textContent = lang.toUpperCase();
+    // update active state
+    document.querySelectorAll('.lang-opt').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.lang === lang);
+    });
+    // update html lang attribute
+    document.documentElement.lang = lang;
+    // store preference
+    try { localStorage.setItem('ontrack_lang', lang); } catch(e) {}
+  }
+
+  // Lang picker toggle
+  const langBtn = document.getElementById('lang-btn');
+  const langMenu = document.getElementById('lang-menu');
+  langBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    langMenu.classList.toggle('open');
+  });
+  document.addEventListener('click', () => langMenu.classList.remove('open'));
+  document.querySelectorAll('.lang-opt').forEach(btn => {
+    btn.addEventListener('click', () => {
+      applyLang(btn.dataset.lang);
+      langMenu.classList.remove('open');
+    });
+  });
+
+  // Load saved language preference
+  try {
+    const saved = localStorage.getItem('ontrack_lang');
+    if (saved && T[saved]) applyLang(saved);
+  } catch(e) {}
+
   // Reveal
   const io = new IntersectionObserver((es) => {
     es.forEach(e => {
