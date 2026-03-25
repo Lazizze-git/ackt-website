@@ -3,585 +3,1119 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ACKT — Le Strava de l'effort intellectuel</title>
-  <meta name="description" content="ACKT rend ton travail visible, valorise et partage. Transforme tes sessions d'apprentissage en une experience sociale motivante.">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800;900&family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            pink: '#E8175D',
-            blu: '#1400FF',
-            sun: '#F5C400',
-            mint: '#00BF6F',
-            ink: '#0D0D0D',
-            grey: '#6B7280',
-            lite: '#F7F7F5',
-          },
-          fontFamily: {
-            sans: ['Hanken Grotesk', 'sans-serif'],
-            serif: ['Fraunces', 'serif'],
-          },
-        }
+  <title>OnTrack — Le Strava de l'effort intellectuel</title>
+  <meta name="description" content="OnTrack mesure, analyse et valorise ton effort intellectuel. Transforme chaque session de travail en données actionnables.">
+
+  <style>
+    /* ── RESET ──────────────────────────────────────────── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    /* ── TOKENS ─────────────────────────────────────────── */
+    :root {
+      --ink:    #080808;
+      --paper:  #ffffff;
+      --smoke:  #f4f4f2;
+      --rule:   #d8d8d8;
+      --muted:  #8c8c8c;
+      --line:   1px solid #080808;
+      --f:      'Helvetica Neue', Helvetica, Arial, sans-serif;
+      --p:      clamp(20px, 4vw, 48px); /* horizontal padding */
+    }
+
+    body {
+      font-family: var(--f);
+      background: var(--paper);
+      color: var(--ink);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── REVEAL ─────────────────────────────────────────── */
+    .r {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity .75s cubic-bezier(.16,1,.3,1),
+                  transform .75s cubic-bezier(.16,1,.3,1);
+    }
+    .r.in { opacity: 1; transform: none; }
+    .r.d1 { transition-delay: .1s; }
+    .r.d2 { transition-delay: .2s; }
+    .r.d3 { transition-delay: .3s; }
+
+    /* ── TICKER ─────────────────────────────────────────── */
+    .ticker {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--ink);
+      overflow: hidden;
+      white-space: nowrap;
+      border-bottom: var(--line);
+      padding: 12px 0;
+    }
+    .ticker-rail {
+      display: inline-flex;
+      animation: slide 32s linear infinite;
+    }
+    .ticker-rail:hover { animation-play-state: paused; }
+    .ts {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: #fff;
+      padding: 0 48px;
+    }
+    .td { opacity: .3; }
+    @keyframes slide { to { transform: translateX(-50%); } }
+
+    /* ── BORDER UTILITIES ───────────────────────────────── */
+    .bb { border-bottom: var(--line); }
+    .bt { border-top: var(--line); }
+    .bl { border-left: var(--line); }
+    .br { border-right: var(--line); }
+
+    /* ── HERO FULLSCREEN ─────────────────────────────────── */
+    .hero-full {
+      position: relative;
+      height: 100svh;
+      min-height: 600px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-bottom: var(--line);
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+    .hero-bg img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: center 20%;
+    }
+    /* gradient overlay : bas → opaque, haut → léger */
+    .hero-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(0,0,0,.4) 0%,
+        rgba(0,0,0,.1) 40%,
+        rgba(0,0,0,.6) 70%,
+        rgba(0,0,0,.85) 100%
+      );
+    }
+    .hero-topbar,
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* top bar sur fond transparent */
+    .hero-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px var(--p);
+      border-bottom: 1px solid rgba(255,255,255,.2);
+    }
+    .hero-topbar .lbl-box {
+      border-color: rgba(255,255,255,.5);
+      color: #fff;
+    }
+    .hero-topbar .lbl { color: rgba(255,255,255,.6); }
+
+    /* contenu bas */
+    .hero-content {
+      padding: 0 var(--p) 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+    @media (min-width: 768px) {
+      .hero-content {
+        flex-direction: row;
+        align-items: flex-end;
+        justify-content: space-between;
+        padding-bottom: 56px;
       }
     }
-  </script>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body { font-family: 'Hanken Grotesk', sans-serif; background: #FFFFFF; color: #0D0D0D; overflow-x: hidden; }
-
-    /* Animations */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(24px); }
-      to { opacity: 1; transform: translateY(0); }
+    .hero-title-wrap h1 {
+      color: #fff;
+    }
+    .hero-sub {
+      font-size: clamp(15px, 2vw, 18px);
+      font-weight: 400;
+      line-height: 1.5;
+      color: rgba(255,255,255,.75);
+      margin-top: 12px;
+      max-width: 360px;
+    }
+    .hero-cta-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    @media (min-width: 768px) {
+      .hero-cta-wrap { align-items: flex-end; }
+    }
+    .btn-white {
+      background: #fff;
+      color: var(--ink);
+      border-color: #fff;
+    }
+    .btn-white:hover {
+      background: transparent;
+      color: #fff;
+    }
+    .subnote-white {
+      font-size: 10px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.5);
     }
 
-    .anim {
-      opacity: 0;
-      transform: translateY(24px);
+    /* ── LABEL ──────────────────────────────────────────── */
+    .lbl {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--muted);
     }
-    .anim.visible {
-      animation: fadeUp 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    .lbl-box {
+      display: inline-block;
+      border: var(--line);
+      padding: 5px 14px;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--ink);
     }
-    .d1 { animation-delay: 0.08s !important; }
-    .d2 { animation-delay: 0.16s !important; }
-    .d3 { animation-delay: 0.24s !important; }
-    .d4 { animation-delay: 0.32s !important; }
 
-    /* Buttons - Figma style */
+    /* ── DISPLAY TYPE ───────────────────────────────────── */
+    .d-hero {
+      font-size: clamp(80px, 18vw, 200px);
+      font-weight: 700;
+      line-height: .88;
+      letter-spacing: -.04em;
+    }
+    .d-hero em {  font-weight: 400; }
+
+    .d-xl {
+      font-size: clamp(48px, 9vw, 100px);
+      font-weight: 700;
+      line-height: .93;
+      letter-spacing: -.035em;
+    }
+    .d-xl em {  font-weight: 400; }
+
+    .d-lg {
+      font-size: clamp(32px, 5.5vw, 64px);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -.03em;
+    }
+    .d-lg em {  font-weight: 400; }
+
+    .d-stat {
+      font-size: clamp(64px, 13vw, 140px);
+      font-weight: 700;
+      line-height: .85;
+      letter-spacing: -.04em;
+    }
+
+    /* ── BODY ────────────────────────────────────────────── */
+    .body {
+      font-size: 14px;
+      line-height: 1.85;
+      color: var(--muted);
+      font-weight: 400;
+      max-width: 480px;
+    }
+
+    /* ── BTN ─────────────────────────────────────────────── */
     .btn {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      padding: 14px 28px;
+      gap: 12px;
+      font-family: var(--f);
+      font-size: 11px;
       font-weight: 600;
-      font-size: 15px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
       text-decoration: none;
-      border-radius: 10px;
-      transition: transform 0.2s ease, border-radius 0.3s ease, background 0.2s ease;
+      padding: 15px 28px;
+      border: var(--line);
       cursor: pointer;
-      border: none;
-      letter-spacing: -0.01em;
+      transition: background .15s, color .15s;
     }
-    .btn:hover { border-radius: 0; }
-    .btn:active { transform: scale(0.96); }
-    .btn:focus-visible { outline: 2px solid #1400FF; outline-offset: 3px; }
-
-    .btn-dark {
-      background: #0D0D0D;
-      color: #FFFFFF;
+    .btn-fill { background: var(--ink); color: var(--paper); }
+    .btn-fill:hover { background: var(--paper); color: var(--ink); }
+    .btn svg { flex-shrink: 0; }
+    .subnote {
+      display: block;
+      font-size: 10px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--muted);
     }
-    .btn-dark:hover { background: #1a1a1a; }
 
-    .btn-outline {
-      background: transparent;
-      color: #0D0D0D;
-      border: 1.5px solid #0D0D0D;
-    }
-    .btn-outline:hover { background: #0D0D0D; color: #FFFFFF; }
-
-    /* Phone frame */
-    .phone {
-      width: 272px;
-      height: 556px;
-      background: #0D0D0D;
-      border-radius: 40px;
-      padding: 10px;
+    /* ── PHOTO PLACEHOLDER ──────────────────────────────── */
+    .img-slot {
+      background: var(--smoke);
       position: relative;
-    }
-    .phone::before {
-      content: '';
-      position: absolute;
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 90px;
-      height: 26px;
-      background: #0D0D0D;
-      border-radius: 0 0 14px 14px;
-      z-index: 10;
-    }
-    .phone-inner {
-      width: 100%;
-      height: 100%;
-      border-radius: 32px;
       overflow: hidden;
-      background: #f5f5f5;
+      display: block;
     }
-    .phone-inner img {
+    .img-slot svg {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+    }
+    .img-tag {
+      position: absolute;
+      bottom: 16px; left: 16px;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      padding: 5px 12px;
+      z-index: 2;
+    }
+
+    /* ════════════════════════════════════════════════════
+       HERO
+    ════════════════════════════════════════════════════ */
+
+    /* ════════════════════════════════════════════════════
+       STRIP — full-bleed statement
+    ════════════════════════════════════════════════════ */
+    .strip {
+      background: var(--ink);
+      color: var(--paper);
+      padding: 80px var(--p);
+      border-bottom: var(--line);
+    }
+    .strip-text {
+      font-size: clamp(32px, 6.5vw, 72px);
+      font-weight: 700;
+      letter-spacing: -.03em;
+      line-height: 1.08;
+      max-width: 14ch;
+    }
+    .strip-text em {  font-weight: 400; }
+
+    /* ════════════════════════════════════════════════════
+       PROBLEM + COMPARISON
+    ════════════════════════════════════════════════════ */
+    .pb-section { border-bottom: var(--line); }
+
+    /* ── SPLIT PATTERN (photo gauche / contenu droite) ──── */
+    .split {
+      display: grid;
+      grid-template-columns: 1fr;
+      border-bottom: var(--line);
+    }
+    @media (min-width: 640px) {
+      .split {
+        grid-template-columns: 1fr 1fr;
+        min-height: 56vh;
+      }
+    }
+    .split-photo {
+      overflow: hidden;
+      aspect-ratio: 4/3;
+      border-bottom: var(--line);
+    }
+    @media (min-width: 640px) {
+      .split-photo {
+        aspect-ratio: unset;
+        border-bottom: none;
+        border-right: var(--line);
+      }
+    }
+    .split-photo img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      object-position: top;
+      object-position: center 25%;
+      display: block;
+    }
+    .split-content {
+      padding: 48px var(--p);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 24px;
     }
 
-    /* Organic decorative dots */
-    .dot {
-      border-radius: 50%;
-      position: absolute;
-      pointer-events: none;
-    }
-
-    /* Step number */
-    .step-num {
-      font-family: 'Hanken Grotesk', sans-serif;
-      font-style: normal;
-      font-size: 80px;
-      line-height: 1;
-      opacity: 0.08;
-      position: absolute;
-      top: 12px;
-      right: 56px;
-      font-weight: 900;
-      letter-spacing: -0.03em;
-    }
-
-    /* Card */
-    .card {
-      border: 1px solid #E5E5E5;
-      border-radius: 16px;
-      padding: 36px 28px;
-      position: relative;
-      overflow: hidden;
-      transition: transform 0.3s ease, border-color 0.3s ease;
-      background: #FFFFFF;
-    }
-    .card:hover {
-      transform: translateY(-4px);
-      border-color: #0D0D0D;
-    }
-
-    /* Colored section */
-    .section-color {
-      background: #F7F7F5;
-    }
-
-    /* Tag */
-    .tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 14px;
-      border-radius: 100px;
-      font-size: 12px;
+    /* pb-specific */
+    .pb-title {
+      font-size: clamp(26px, 3.5vw, 44px);
       font-weight: 700;
-      letter-spacing: 0.06em;
+      letter-spacing: -.025em;
+      line-height: 1.05;
+    }
+    .pb-body {
+      font-size: 13px;
+      line-height: 1.75;
+      color: var(--muted);
+    }
+
+    /* quote split */
+    .split-quote {
+      font-size: clamp(20px, 2.8vw, 32px);
+      font-weight: 700;
+      letter-spacing: -.02em;
+      line-height: 1.2;
+    }
+    .split-ref {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: .18em;
       text-transform: uppercase;
+      color: var(--muted);
     }
 
-    /* Logo SVG inline */
-    .logo-bar { fill: #E8175D; }
-    .logo-dot-blue { fill: #1400FF; }
-    .logo-dot-yellow { fill: #F5C400; }
-    .logo-dot-green { fill: #00BF6F; }
+    /* comparison */
+    .pb-cmp {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .pb-col { padding: 32px var(--p); }
+    .pb-col-before { border-right: var(--line); }
+    .pb-col-after  { background: var(--ink); color: #fff; }
 
-    /* Mobile optimizations */
-    @media (max-width: 640px) {
-      .step-num {
-        font-size: 56px;
-        right: 16px;
-        top: 6px;
-      }
+    .pb-col-head {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: var(--line);
+    }
+    .pb-col-after .pb-col-head {
+      color: rgba(255,255,255,.45);
+      border-color: rgba(255,255,255,.15);
+    }
 
-      .card {
-        padding: 28px 20px;
-      }
+    .pb-line {
+      display: flex;
+      gap: 12px;
+      align-items: baseline;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--rule);
+      font-size: 13px;
+      line-height: 1.45;
+      color: var(--muted);
+    }
+    .pb-col-after .pb-line { color: #fff; border-color: rgba(255,255,255,.1); }
+    .pb-line:last-child { border-bottom: none; }
 
-      .card .rounded-2xl {
-        height: 200px !important;
-      }
+    .pb-x    { flex-shrink: 0; color: var(--rule); font-size: 13px; }
+    .pb-plus { flex-shrink: 0; color: #fff; font-size: 13px; font-weight: 600; }
 
-      .card .rounded-2xl img {
-        width: 55% !important;
-      }
+    @media (max-width: 480px) {
+      .pb-col { padding: 24px 16px; }
+      .pb-line { font-size: 12px; }
+    }
 
-      /* Full-width CTA buttons, but not nav button */
-      .btn:not(nav .btn) {
-        width: 100%;
-        justify-content: center;
-      }
-
-      /* Nav button stays compact */
-      nav .btn {
-        width: auto;
-      }
-
-      /* Hero phone smaller on mobile */
-      .hero-phone {
-        width: 230px !important;
-        height: 470px !important;
-      }
-
-      /* Philosophy section: single column, center phone */
-      .philosophy-phones {
-        justify-content: center;
-      }
-
-      /* Features grid: smaller padding on mobile */
-      .features-grid > div {
-        padding: 20px !important;
-      }
-
-      .features-grid h3 {
-        font-size: 15px !important;
-      }
-
-      .features-grid p {
-        font-size: 12px !important;
-      }
-
-      /* Philosophy phone sizing */
-      .philosophy-phones .phone {
-        width: 200px !important;
-        height: 408px !important;
+    /* ════════════════════════════════════════════════════
+       FEATURES — editorial numbered list
+    ════════════════════════════════════════════════════ */
+    .features { border-bottom: var(--line); }
+    .features-head {
+      display: grid;
+      grid-template-columns: 1fr;
+      padding: 72px var(--p) 0;
+      gap: 24px;
+      margin-bottom: 56px;
+    }
+    @media (min-width: 768px) {
+      .features-head {
+        grid-template-columns: 1fr 1fr;
+        align-items: end;
       }
     }
+
+    .feat {
+      display: grid;
+      grid-template-columns: 64px 1fr auto;
+      align-items: start;
+      gap: 0;
+      border-top: var(--line);
+      padding: 0 var(--p);
+      transition: background .2s;
+    }
+    .feat:hover { background: var(--smoke); }
+
+    .feat-n {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .1em;
+      color: var(--muted);
+      padding: 28px 0;
+      border-right: var(--line);
+      padding-right: 24px;
+    }
+    .feat-body {
+      padding: 28px 32px;
+    }
+    .feat-title {
+      font-size: clamp(18px, 2.8vw, 26px);
+      font-weight: 700;
+      letter-spacing: -.02em;
+      margin-bottom: 8px;
+    }
+    .feat-title em {  font-weight: 400; }
+    .feat-desc {
+      font-size: 13px;
+      line-height: 1.8;
+      color: var(--muted);
+    }
+    .feat-arrow {
+      font-size: 20px;
+      color: var(--rule);
+      padding: 28px 0;
+      align-self: start;
+      padding-left: 16px;
+      transition: transform .2s, color .2s;
+    }
+    .feat:hover .feat-arrow { transform: translateX(4px); color: var(--ink); }
+
+    .feat:last-child { border-bottom: var(--line); }
+
+    @media (max-width: 600px) {
+      .features-head {
+        padding: 48px var(--p) 0;
+        margin-bottom: 36px;
+        gap: 14px;
+      }
+      .feat { grid-template-columns: 32px 1fr; }
+      .feat-arrow { display: none; }
+      .feat-n {
+        font-size: 10px;
+        padding: 20px 12px 20px 0;
+      }
+      .feat-body { padding: 20px 16px; }
+      .feat-title { font-size: 17px; }
+      .feat-desc { font-size: 13px; line-height: 1.6; }
+    }
+
+    /* ════════════════════════════════════════════════════
+       FULL PHOTO + CAPTION
+    ════════════════════════════════════════════════════ */
+    .photo-full {
+      aspect-ratio: 16/9;
+      border-bottom: var(--line);
+    }
+    @media (max-width: 640px) { .photo-full { aspect-ratio: 4/3; } }
+
+    .caption-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px var(--p);
+      border-bottom: var(--line);
+    }
+    .caption-q {
+      font-size: 14px;
+      
+      color: var(--muted);
+    }
+    .caption-ref {
+      font-size: 10px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--rule);
+    }
+
+    /* ════════════════════════════════════════════════════
+       STATS — large numbers edge to edge
+    ════════════════════════════════════════════════════ */
+    .stats { border-bottom: var(--line); }
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .stat-cell {
+      padding: 56px var(--p);
+      border-bottom: var(--line);
+    }
+    .stat-cell:nth-child(odd) { border-right: var(--line); }
+    .stat-cell:nth-last-child(-n+2) { border-bottom: none; }
+
+    .stat-num {
+      display: block;
+      font-size: clamp(56px, 11vw, 112px);
+      font-weight: 700;
+      letter-spacing: -.04em;
+      line-height: .85;
+      margin-bottom: 12px;
+    }
+    .stat-lbl {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    @media (max-width: 480px) {
+      .stat-cell { padding: 40px 20px; }
+    }
+
+    /* ════════════════════════════════════════════════════
+       PHOTO PAIR
+    ════════════════════════════════════════════════════ */
+    .pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: var(--line);
+    }
+    .pair .img-slot { aspect-ratio: 2/3; }
+    .pair .img-slot:first-child { border-right: var(--line); }
+
+    /* ════════════════════════════════════════════════════
+       CTA FINAL
+    ════════════════════════════════════════════════════ */
+    .cta {
+      padding: 120px var(--p);
+      border-bottom: var(--line);
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 56px;
+    }
+    @media (min-width: 768px) {
+      .cta {
+        grid-template-columns: 1fr auto;
+        align-items: end;
+      }
+    }
+    .cta-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    @media (min-width: 768px) {
+      .cta-actions { align-items: flex-end; }
+    }
+
+    /* ════════════════════════════════════════════════════
+       FOOTER
+    ════════════════════════════════════════════════════ */
+    footer {
+      background: var(--ink);
+      color: var(--paper);
+    }
+    .footer-top {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+    .footer-brand {
+      padding: 48px var(--p);
+      border-right: 1px solid rgba(255,255,255,.1);
+    }
+    .footer-logo {
+      font-size: 32px;
+      font-weight: 700;
+      
+      letter-spacing: -.025em;
+      margin-bottom: 6px;
+    }
+    .footer-sub {
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.35);
+    }
+    .footer-nav {
+      padding: 48px var(--p);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .f-link {
+      font-family: var(--f);
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.5);
+      text-decoration: none;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      text-align: left;
+      transition: color .15s;
+    }
+    .f-link:hover { color: var(--paper); }
+    .footer-bottom {
+      padding: 20px var(--p);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .footer-copy {
+      font-size: 10px;
+      letter-spacing: .1em;
+      color: rgba(255,255,255,.2);
+    }
+    .footer-legal {
+      font-size: 10px;
+      letter-spacing: .1em;
+      color: rgba(255,255,255,.2);
+    }
+
+    /* ════════════════════════════════════════════════════
+       MODALS
+    ════════════════════════════════════════════════════ */
+    .overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.6);
+      backdrop-filter: blur(4px);
+      z-index: 500;
+      opacity: 0; pointer-events: none;
+      transition: opacity .25s;
+    }
+    .overlay.open { opacity: 1; pointer-events: auto; }
+
+    .sheet {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--paper);
+      max-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      border-top: var(--line);
+      transform: translateY(100%);
+      transition: transform .42s cubic-bezier(.16,1,.3,1);
+      z-index: 501;
+    }
+    .overlay.open .sheet { transform: translateY(0); }
+
+    .sheet-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px var(--p);
+      border-bottom: var(--line);
+      flex-shrink: 0;
+    }
+    .sheet-title {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -.01em;
+    }
+    .sheet-close {
+      font-family: var(--f);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      background: none;
+      border: var(--line);
+      padding: 7px 16px;
+      cursor: pointer;
+      transition: background .15s, color .15s;
+    }
+    .sheet-close:hover { background: var(--ink); color: var(--paper); }
+
+    .sheet-body {
+      overflow-y: auto;
+      padding: 40px var(--p) 80px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .sheet-date {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border: var(--line);
+      padding: 4px 12px;
+      margin-bottom: 40px;
+    }
+    .sheet-body h3 {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -.01em;
+      margin: 40px 0 10px;
+    }
+    .sheet-body h3:first-of-type { margin-top: 0; }
+    .sheet-body p,
+    .sheet-body ul {
+      font-size: 13px;
+      line-height: 1.9;
+      color: #555;
+      margin-bottom: 12px;
+    }
+    .sheet-body ul { padding-left: 20px; }
+    .sheet-body li { margin-bottom: 4px; }
+    .sheet-body strong { font-weight: 600; color: var(--ink); }
   </style>
 </head>
 <body>
 
-  <!-- NAV -->
-  <nav class="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-xl border-b border-black/5">
-    <div class="max-w-[1200px] mx-auto px-6 h-14 flex items-center justify-between">
-      <!-- Logo SVG -->
-      <a href="/" class="flex items-center" style="gap: 8px;">
-        <svg width="68" height="24" viewBox="0 0 160 56" fill="none">
-          <text x="0" y="48" font-family="Hanken Grotesk, sans-serif" font-weight="900" font-size="56" fill="#0D0D0D" letter-spacing="-3">ACKT</text>
-        </svg>
-        <svg width="56" height="12" viewBox="0 0 56 12">
-          <rect x="0" y="1" width="24" height="10" rx="5" class="logo-bar"/>
-          <ellipse cx="32" cy="6" rx="5" ry="5" class="logo-dot-blue"/>
-          <ellipse cx="42" cy="6" rx="4" ry="5" class="logo-dot-yellow"/>
-          <ellipse cx="51" cy="6" rx="4" ry="5" class="logo-dot-green"/>
-        </svg>
+<!-- ── TICKER ───────────────────────────────────────────── -->
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-rail">
+    <span class="ts">OnTrack</span><span class="ts td">—</span>
+    <span class="ts">Le Strava de l'effort intellectuel</span><span class="ts td">—</span>
+    <span class="ts">Disponible sur App Store</span><span class="ts td">—</span>
+    <span class="ts">Track your mind</span><span class="ts td">—</span>
+    <span class="ts">Mesure ton potentiel</span><span class="ts td">—</span>
+    <span class="ts">Chaque session compte</span><span class="ts td">—</span>
+    <span class="ts">OnTrack</span><span class="ts td">—</span>
+    <span class="ts">Le Strava de l'effort intellectuel</span><span class="ts td">—</span>
+    <span class="ts">Disponible sur App Store</span><span class="ts td">—</span>
+    <span class="ts">Track your mind</span><span class="ts td">—</span>
+    <span class="ts">Mesure ton potentiel</span><span class="ts td">—</span>
+    <span class="ts">Chaque session compte</span><span class="ts td">—</span>
+  </div>
+</div>
+
+<!-- ── HERO ─────────────────────────────────────────────── -->
+<section class="hero-full r">
+
+  <!-- photo background -->
+  <div class="hero-bg">
+    <img src="images/photo1.jpg" alt="Étudiante souriante en bibliothèque avec casque">
+  </div>
+
+  <!-- top bar -->
+  <div class="hero-topbar">
+    <span class="lbl-box">Application mobile — iOS</span>
+    <span class="lbl">2025</span>
+  </div>
+
+  <!-- bottom content -->
+  <div class="hero-content">
+    <div class="hero-title-wrap">
+      <h1 class="d-hero r d1">OnTrack</h1>
+      <p class="hero-sub r d2">Transforme chaque session de travail<br>en données qui comptent vraiment.</p>
+    </div>
+    <div class="hero-cta-wrap r d2">
+      <a href="#" class="btn btn-white">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11"/></svg>
+        Télécharger — App Store
       </a>
-      <a href="#download" class="btn btn-dark" style="padding: 8px 20px; font-size: 13px;">
-        Telecharger
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>
-      </a>
+      <span class="subnote-white">Gratuit · iOS 16+</span>
     </div>
-  </nav>
+  </div>
 
+</section>
 
-  <!-- HERO -->
-  <section class="min-h-screen flex items-center pt-14 relative overflow-hidden">
-    <!-- Organic background shapes -->
-    <div class="dot w-[400px] h-[400px] -top-32 -right-48 opacity-[0.06]" style="background: #E8175D;"></div>
-    <div class="dot w-[300px] h-[300px] top-1/2 -left-36 opacity-[0.04]" style="background: #1400FF;"></div>
-    <div class="dot w-[200px] h-[200px] bottom-20 right-20 opacity-[0.05]" style="background: #F5C400;"></div>
+<!-- ── STRIP ─────────────────────────────────────────────── -->
+<section class="strip">
+  <p class="strip-text r">
+    Tu travailles.<br>Mais est-ce que<br>tu progresses ?
+  </p>
+</section>
 
-    <div class="max-w-[1200px] mx-auto px-6 w-full py-20 lg:py-0">
-      <div class="flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
+<!-- ── PROBLEM + COMPARISON ──────────────────────────────── -->
+<section class="pb-section">
 
-        <div class="flex-1 text-center lg:text-left max-w-2xl">
-          <div class="anim">
-            <span class="tag bg-pink/10 text-pink">Le Strava de l'effort intellectuel</span>
-          </div>
-
-          <h1 class="anim d1 mt-8 text-[clamp(2.5rem,6vw,5rem)] font-black leading-[1.02] tracking-tight text-ink">
-            Ton travail merite<br>d'etre
-            <span class="font-serif italic font-normal text-pink">visible.</span>
-          </h1>
-
-          <p class="anim d2 mt-6 text-lg text-grey max-w-lg mx-auto lg:mx-0" style="line-height: 1.7;">
-            Fini la procrastination solitaire. ACKT transforme tes sessions de travail en une experience sociale motivante.
-          </p>
-
-          <div class="anim d3 mt-10 flex flex-col sm:flex-row gap-3 justify-center lg:justify-start" id="download">
-            <a href="#" class="btn btn-dark">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 21.99 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 21.99C7.79 22.03 6.8 20.68 5.96 19.47C4.25 16.97 2.94 12.45 4.7 9.39C5.57 7.87 7.13 6.91 8.82 6.88C10.1 6.86 11.32 7.75 12.11 7.75C12.89 7.75 14.37 6.68 15.92 6.84C16.57 6.87 18.39 7.1 19.56 8.82C19.47 8.88 17.39 10.1 17.41 12.63C17.44 15.65 20.06 16.66 20.09 16.67C20.06 16.74 19.67 18.11 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z"/></svg>
-              App Store
-            </a>
-          </div>
-        </div>
-
-        <!-- Phone -->
-        <div class="anim d4 flex-shrink-0 relative">
-          <!-- Colored dots around phone -->
-          <div class="dot w-10 h-10 -top-8 right-16 bg-sun" style="z-index: -1;"></div>
-          <div class="dot w-7 h-7 top-24 -right-10 bg-mint" style="z-index: -1;"></div>
-          <div class="dot w-8 h-8 bottom-24 -left-10 bg-blu opacity-70" style="z-index: -1;"></div>
-          <div class="dot w-10 h-10 -bottom-6 right-16 bg-pink opacity-60" style="z-index: -1;"></div>
-
-          <div class="phone hero-phone" style="box-shadow: 0 30px 80px -20px rgba(0,0,0,0.25);">
-            <div class="phone-inner">
-              <img src="/images/timer.png" alt="ACKT - Ecran timer" loading="lazy">
-            </div>
-          </div>
-        </div>
-
-      </div>
+  <!-- split: photo gauche / texte droite -->
+  <div class="split">
+    <div class="split-photo">
+      <img src="images/photo2.jpg" alt="Étudiante concentrée">
     </div>
-  </section>
-
-
-  <!-- COMMENT CA MARCHE -->
-  <section class="py-20 lg:py-32 section-color relative overflow-hidden mx-4 sm:mx-6 lg:mx-auto lg:max-w-[1300px] rounded-3xl">
-    <!-- Background dots -->
-    <div class="dot w-[200px] h-[200px] -top-16 -right-16 opacity-[0.06]" style="background: #1400FF;"></div>
-    <div class="dot w-[150px] h-[150px] bottom-20 -left-16 opacity-[0.05]" style="background: #00BF6F;"></div>
-    <div class="dot w-[100px] h-[100px] top-1/2 right-10 opacity-[0.04]" style="background: #F5C400;"></div>
-
-    <div class="max-w-[1200px] mx-auto px-6">
-
-      <div class="max-w-xl mb-16 anim">
-        <span class="tag border border-ink/10 text-ink/60">Comment ca marche</span>
-        <h2 class="mt-6 text-4xl sm:text-5xl font-black tracking-tight text-ink leading-[1.08]">
-          Trois etapes.<br>
-          <span class="font-serif italic font-normal text-blu">Zero friction.</span>
-        </h2>
-      </div>
-
-      <div class="grid md:grid-cols-3 gap-6">
-
-        <!-- 1 -->
-        <div class="card anim d1">
-          <div class="step-num text-pink">01</div>
-          <div class="w-10 h-10 rounded-full bg-pink/10 flex items-center justify-center mb-5">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E8175D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-            </svg>
-          </div>
-          <h3 class="text-xl font-bold tracking-tight mb-2">Enregistre</h3>
-          <p class="text-grey text-[15px] leading-relaxed" style="line-height: 1.7;">Lance une session en -20s. Matiere, mode Pomodoro ou libre, c'est parti.</p>
-          <div class="mt-6 rounded-2xl overflow-hidden border border-black/5 bg-lite h-56 flex items-start justify-center pt-5">
-            <img src="/images/timer.png" alt="Timer" class="w-[65%] rounded-t-xl" style="box-shadow: 0 -2px 20px -4px rgba(0,0,0,0.1);" loading="lazy">
-          </div>
-        </div>
-
-        <!-- 2 -->
-        <div class="card anim d2">
-          <div class="step-num text-blu">02</div>
-          <div class="w-10 h-10 rounded-full bg-blu/10 flex items-center justify-center mb-5">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1400FF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-            </svg>
-          </div>
-          <h3 class="text-xl font-bold tracking-tight mb-2">Partage</h3>
-          <p class="text-grey text-[15px] leading-relaxed" style="line-height: 1.7;">Tes sessions dans le feed de tes amis. Like, commente, encourage.</p>
-          <div class="mt-6 rounded-2xl overflow-hidden border border-black/5 bg-lite h-56 flex items-start justify-center pt-5">
-            <img src="/images/feed.png" alt="Feed" class="w-[65%] rounded-t-xl" style="box-shadow: 0 -2px 20px -4px rgba(0,0,0,0.1);" loading="lazy">
-          </div>
-        </div>
-
-        <!-- 3 -->
-        <div class="card anim d3">
-          <div class="step-num text-mint">03</div>
-          <div class="w-10 h-10 rounded-full bg-mint/10 flex items-center justify-center mb-5">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00BF6F" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-            </svg>
-          </div>
-          <h3 class="text-xl font-bold tracking-tight mb-2">Progresse</h3>
-          <p class="text-grey text-[15px] leading-relaxed" style="line-height: 1.7;">Stats, streaks, defis entre amis. La regularite devient un jeu.</p>
-          <div class="mt-6 rounded-2xl overflow-hidden border border-black/5 bg-lite h-56 flex items-start justify-center pt-5">
-            <img src="/images/profile.png" alt="Profil" class="w-[65%] rounded-t-xl" style="box-shadow: 0 -2px 20px -4px rgba(0,0,0,0.1);" loading="lazy">
-          </div>
-        </div>
-
-      </div>
+    <div class="split-content">
+      <span class="lbl r">Le problème</span>
+      <h2 class="pb-title r d1">L'effort invisible n'existe pas.</h2>
+      <p class="pb-body r d2">Les athlètes trackent chaque kilomètre. Les étudiants, créateurs et pros du savoir travaillent dans le flou total — sans métriques, sans feedback. OnTrack change ça.</p>
     </div>
-  </section>
+  </div>
 
-
-  <!-- PHILOSOPHIE -->
-  <section class="py-20 lg:py-32 relative overflow-hidden">
-    <!-- Background dots -->
-    <div class="dot w-[200px] h-[200px] top-10 -left-20 opacity-[0.05]" style="background: #E8175D;"></div>
-    <div class="dot w-[150px] h-[150px] bottom-10 -right-16 opacity-[0.04]" style="background: #F5C400;"></div>
-
-    <div class="max-w-[1200px] mx-auto px-6">
-      <div class="flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
-
-        <!-- Phones -->
-        <div class="anim flex gap-5 flex-shrink-0 relative philosophy-phones">
-          <div class="dot w-12 h-12 -top-10 left-1/3 bg-sun" style="z-index: -1;"></div>
-          <div class="dot w-8 h-8 top-24 -right-12 bg-mint" style="z-index: -1;"></div>
-          <div class="dot w-10 h-10 bottom-28 -left-12 bg-blu opacity-70" style="z-index: -1;"></div>
-          <div class="dot w-12 h-12 -bottom-8 right-1/4 bg-pink opacity-60" style="z-index: -1;"></div>
-
-          <div class="phone" style="width: 232px; height: 474px; border-radius: 36px; padding: 9px; transform: rotate(-2deg); box-shadow: 0 20px 60px -15px rgba(0,0,0,0.2);">
-            <div class="phone-inner" style="border-radius: 28px;">
-              <img src="/images/stats.png" alt="Statistiques" loading="lazy">
-            </div>
-          </div>
-          <div class="phone hidden sm:block" style="width: 232px; height: 474px; border-radius: 36px; padding: 9px; transform: rotate(2deg) translateY(24px); box-shadow: 0 20px 60px -15px rgba(0,0,0,0.2);">
-            <div class="phone-inner" style="border-radius: 28px;">
-              <img src="/images/feed2.png" alt="Feed" loading="lazy">
-            </div>
-          </div>
-        </div>
-
-        <!-- Text -->
-        <div class="flex-1 text-center lg:text-left">
-          <span class="anim tag bg-pink/10 text-pink">La philosophie</span>
-          <h2 class="anim d1 mt-6 text-4xl sm:text-5xl font-black tracking-tight text-ink leading-[1.08]">
-            La fin du travail<br>
-            <span class="font-serif italic font-normal text-pink">invisible.</span>
-          </h2>
-          <p class="anim d2 mt-6 text-lg text-grey max-w-lg mx-auto lg:mx-0" style="line-height: 1.7;">
-            Reviser seul dans sa chambre, personne ne le voit. Cette solitude tue la motivation et nourrit la procrastination.
-          </p>
-          <p class="anim d3 mt-4 text-lg text-ink font-medium max-w-lg mx-auto lg:mx-0" style="line-height: 1.7;">
-            ACKT change la donne : chaque session devient visible, chaque effort est reconnu. La regularite se transforme en fierte partagee.
-          </p>
-          <div class="anim d4 mt-8">
-            <a href="#download" class="btn btn-dark">
-              Commencer gratuitement
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
-            </a>
-          </div>
-        </div>
-
-      </div>
+  <!-- comparison : 2 colonnes -->
+  <div class="pb-cmp">
+    <div class="pb-col pb-col-before">
+      <div class="pb-col-head">Sans OnTrack</div>
+      <div class="pb-line"><span class="pb-x">×</span><span>Sessions estimées à la louche</span></div>
+      <div class="pb-line"><span class="pb-x">×</span><span>Aucun feedback sur ta concentration</span></div>
+      <div class="pb-line"><span class="pb-x">×</span><span>Progression invisible, non comparable</span></div>
+      <div class="pb-line"><span class="pb-x">×</span><span>Motivation fragile, sans preuve</span></div>
     </div>
-  </section>
-
-
-  <!-- FEATURES -->
-  <section class="py-20 lg:py-32 bg-ink text-white relative overflow-hidden mx-4 sm:mx-6 lg:mx-auto lg:max-w-[1300px] rounded-3xl">
-    <!-- Organic dots -->
-    <div class="dot w-[300px] h-[300px] -top-20 -right-20 opacity-[0.08]" style="background: #E8175D;"></div>
-    <div class="dot w-[200px] h-[200px] bottom-0 left-10 opacity-[0.06]" style="background: #1400FF;"></div>
-
-    <div class="max-w-[1200px] mx-auto px-6 relative z-10">
-      <div class="max-w-xl mb-16">
-        <span class="anim tag border border-white/20 text-white/60">Fonctionnalites</span>
-        <h2 class="anim d1 mt-6 text-4xl sm:text-5xl font-black tracking-tight leading-[1.08]">
-          Tout pour rester<br>
-          <span class="font-serif italic font-normal text-sun">motive.</span>
-        </h2>
-      </div>
-
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 features-grid">
-
-        <div class="anim d1 rounded-2xl p-7 border border-white/10 transition-transform duration-200 hover:scale-[1.02] hover:border-white/20" style="background: rgba(255,255,255,0.04);">
-          <div class="w-10 h-10 rounded-lg flex items-center justify-center mb-4" style="background: rgba(232,23,93,0.15);">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E8175D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-          </div>
-          <h3 class="font-bold text-lg tracking-tight mb-1.5">Pomodoro</h3>
-          <p class="text-white/50 text-sm" style="line-height: 1.7;">Timer intelligent. Pomodoro, libre ou compte a rebours.</p>
-        </div>
-
-        <div class="anim d2 rounded-2xl p-7 border border-white/10 transition-transform duration-200 hover:scale-[1.02] hover:border-white/20" style="background: rgba(255,255,255,0.04);">
-          <div class="w-10 h-10 rounded-lg flex items-center justify-center mb-4" style="background: rgba(20,0,255,0.15);">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-          </div>
-          <h3 class="font-bold text-lg tracking-tight mb-1.5">Feed social</h3>
-          <p class="text-white/50 text-sm" style="line-height: 1.7;">Les sessions de tes amis. Like, commente, encourage.</p>
-        </div>
-
-        <div class="anim d3 rounded-2xl p-7 border border-white/10 transition-transform duration-200 hover:scale-[1.02] hover:border-white/20" style="background: rgba(255,255,255,0.04);">
-          <div class="w-10 h-10 rounded-lg flex items-center justify-center mb-4" style="background: rgba(245,196,0,0.15);">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F5C400" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
-          </div>
-          <h3 class="font-bold text-lg tracking-tight mb-1.5">Statistiques</h3>
-          <p class="text-white/50 text-sm" style="line-height: 1.7;">Heatmap, graphiques de progression, rapports bien-etre.</p>
-        </div>
-
-        <div class="anim d4 rounded-2xl p-7 border border-white/10 transition-transform duration-200 hover:scale-[1.02] hover:border-white/20" style="background: rgba(255,255,255,0.04);">
-          <div class="w-10 h-10 rounded-lg flex items-center justify-center mb-4" style="background: rgba(0,191,111,0.15);">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00BF6F" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-          </div>
-          <h3 class="font-bold text-lg tracking-tight mb-1.5">Streaks & defis</h3>
-          <p class="text-white/50 text-sm" style="line-height: 1.7;">Series, defis entre amis, emulation saine.</p>
-        </div>
-
-      </div>
+    <div class="pb-col pb-col-after">
+      <div class="pb-col-head">Avec OnTrack</div>
+      <div class="pb-line"><span class="pb-plus">+</span><span>Sessions chronométrées et catégorisées</span></div>
+      <div class="pb-line"><span class="pb-plus">+</span><span>Score de concentration en temps réel</span></div>
+      <div class="pb-line"><span class="pb-plus">+</span><span>Graphes hebdomadaires et mensuels</span></div>
+      <div class="pb-line"><span class="pb-plus">+</span><span>Streaks et objectifs personnalisés</span></div>
     </div>
-  </section>
+  </div>
 
+</section>
 
-  <!-- CTA FINAL -->
-  <section class="py-20 lg:py-32 relative overflow-hidden">
-    <!-- Background dots -->
-    <div class="dot w-[160px] h-[160px] top-8 -left-12 opacity-[0.06]" style="background: #F5C400;"></div>
-    <div class="dot w-[120px] h-[120px] bottom-8 -right-10 opacity-[0.05]" style="background: #00BF6F;"></div>
-    <div class="dot w-16 h-16 top-20 left-[10%] bg-sun opacity-20"></div>
-    <div class="dot w-10 h-10 top-40 right-[15%] bg-mint opacity-20"></div>
-    <div class="dot w-6 h-6 bottom-20 left-[30%] bg-blu opacity-15"></div>
-    <div class="dot w-12 h-12 bottom-10 right-[20%] bg-pink opacity-15"></div>
-
-    <div class="max-w-3xl mx-auto px-6 text-center relative z-10">
-      <h2 class="anim text-4xl sm:text-5xl lg:text-[3.5rem] font-black tracking-tight text-ink leading-[1.08]">
-        Pret a rendre ton effort
-        <span class="font-serif italic font-normal text-pink">visible</span> ?
-      </h2>
-      <p class="anim d1 mt-5 text-lg text-grey max-w-md mx-auto" style="line-height: 1.7;">
-        Rejoins la communaute. Gratuit, pour toujours.
-      </p>
-      <div class="anim d2 mt-10 flex flex-col sm:flex-row gap-3 justify-center">
-        <a href="#" class="btn btn-dark">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 21.99 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 21.99C7.79 22.03 6.8 20.68 5.96 19.47C4.25 16.97 2.94 12.45 4.7 9.39C5.57 7.87 7.13 6.91 8.82 6.88C10.1 6.86 11.32 7.75 12.11 7.75C12.89 7.75 14.37 6.68 15.92 6.84C16.57 6.87 18.39 7.1 19.56 8.82C19.47 8.88 17.39 10.1 17.41 12.63C17.44 15.65 20.06 16.66 20.09 16.67C20.06 16.74 19.67 18.11 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z"/></svg>
-          App Store
-        </a>
-      </div>
+<!-- ── FEATURES ──────────────────────────────────────────── -->
+<section class="features">
+  <div class="features-head">
+    <div>
+      <span class="lbl r">Fonctionnalités</span>
+      <h2 class="d-xl r d1" style="margin-top:20px;">Ce que fait<br>OnTrack.</h2>
     </div>
-  </section>
+    <p class="body r d2">Quatre piliers conçus pour rendre ton effort intellectuel aussi mesurable et motivant que l'entraînement physique.</p>
+  </div>
 
-
-  <!-- FOOTER -->
-  <footer class="border-t border-black/10 py-14 relative overflow-hidden">
-    <div class="dot w-[150px] h-[150px] -bottom-16 -right-16 opacity-[0.04]" style="background: #1400FF;"></div>
-    <div class="dot w-[100px] h-[100px] top-10 -left-12 opacity-[0.04]" style="background: #E8175D;"></div>
-    <div class="max-w-[1200px] mx-auto px-6">
-      <div class="flex flex-col md:flex-row justify-between items-start gap-10">
-        <div>
-          <a href="/" class="text-2xl font-black tracking-tight text-ink">ACKT</a>
-          <p class="text-sm text-grey mt-2 max-w-xs" style="line-height: 1.7;">Rends ton effort intellectuel visible, valorise et partage.</p>
-        </div>
-        <div class="flex gap-14">
-          <div>
-            <p class="text-xs font-bold tracking-widest uppercase text-grey/60 mb-3">Legal</p>
-            <ul class="space-y-2.5">
-              <li><a href="/privacy.html" class="text-sm text-ink hover:text-pink transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-blu focus-visible:outline-offset-2">Politique de confidentialite</a></li>
-              <li><a href="/terms.html" class="text-sm text-ink hover:text-pink transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-blu focus-visible:outline-offset-2">Termes et conditions</a></li>
-            </ul>
-          </div>
-          <div>
-            <p class="text-xs font-bold tracking-widest uppercase text-grey/60 mb-3">Contact</p>
-            <ul class="space-y-2.5">
-              <li><a href="mailto:contact@ackt.app" class="text-sm text-ink hover:text-pink transition-colors duration-200">contact@ackt.app</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      <div class="mt-14 pt-6 border-t border-black/5 flex flex-col sm:flex-row justify-between items-center gap-3">
-        <p class="text-xs text-grey">&copy; 2026 ACKT. Tous droits reserves.</p>
-        <div class="flex gap-2">
-          <span class="w-2.5 h-2.5 rounded-full bg-pink"></span>
-          <span class="w-2.5 h-2.5 rounded-full bg-blu"></span>
-          <span class="w-2.5 h-2.5 rounded-full bg-sun"></span>
-          <span class="w-2.5 h-2.5 rounded-full bg-mint"></span>
-        </div>
-      </div>
+  <div class="feat r">
+    <span class="feat-n">01</span>
+    <div class="feat-body">
+      <h3 class="feat-title">Suivi en temps réel</h3>
+      <p class="feat-desc">Lance une session en un tap. OnTrack mesure ta concentration active, détecte les interruptions et te donne un score à la fin. Simple. Précis.</p>
     </div>
-  </footer>
+    <span class="feat-arrow">→</span>
+  </div>
 
+  <div class="feat r">
+    <span class="feat-n">02</span>
+    <div class="feat-body">
+      <h3 class="feat-title">Analyse de la concentration</h3>
+      <p class="feat-desc">Courbe d'énergie, fenêtres de peak performance, moments à risque de décrochage — transformés en insights lisibles.</p>
+    </div>
+    <span class="feat-arrow">→</span>
+  </div>
 
-  <script>
-    if (window.location.search.includes('noanim')) {
-      document.querySelectorAll('.anim').forEach(el => {
-        el.style.opacity = '1';
-        el.style.transform = 'none';
-      });
-    } else {
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-            observer.unobserve(entry.target);
-          }
-        });
-      }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-      document.querySelectorAll('.anim').forEach(el => observer.observe(el));
-    }
-  </script>
+  <div class="feat r">
+    <span class="feat-n">03</span>
+    <div class="feat-body">
+      <h3 class="feat-title">Objectifs personnalisés</h3>
+      <p class="feat-desc">Définis tes cibles hebdomadaires par domaine. OnTrack te rappelle, t'encourage et te montre où tu déroges à ton plan.</p>
+    </div>
+    <span class="feat-arrow">→</span>
+  </div>
 
+  <div class="feat r">
+    <span class="feat-n">04</span>
+    <div class="feat-body">
+      <h3 class="feat-title">Insights hebdomadaires</h3>
+      <p class="feat-desc">Chaque lundi, un rapport arrive. Meilleures heures, domaine le plus travaillé, progression mois sur mois.</p>
+    </div>
+    <span class="feat-arrow">→</span>
+  </div>
+</section>
+
+<!-- ── FULL PHOTO ─────────────────────────────────────────── -->
+<div class="img-slot photo-full r">
+  <img src="images/photo2.jpg" alt="Étudiante concentrée à son bureau devant une fenêtre" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 30%;">
+</div>
+<div class="caption-bar bb">
+  <span class="caption-q">"La discipline, c'est se souvenir de ce que l'on veut vraiment."</span>
+  <span class="caption-ref">Fig. 01</span>
+</div>
+
+<!-- ── STATS ─────────────────────────────────────────────── -->
+<section class="stats">
+  <div class="stats-row">
+    <div class="stat-cell r">
+      <span class="stat-num">847</span>
+      <span class="stat-lbl">Sessions par jour</span>
+    </div>
+    <div class="stat-cell r d1">
+      <span class="stat-num">3.2h</span>
+      <span class="stat-lbl">Concentration moyenne</span>
+    </div>
+    <div class="stat-cell r d2">
+      <span class="stat-num">94%</span>
+      <span class="stat-lbl">Objectifs complétés</span>
+    </div>
+    <div class="stat-cell r d3">
+      <span class="stat-num">12k+</span>
+      <span class="stat-lbl">Utilisateurs actifs</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── PHOTO PAIR ─────────────────────────────────────────── -->
+<div class="pair">
+  <div class="img-slot">
+    <img src="images/photo3.jpg" alt="Bureau étudiant vu du dessus avec notes et livres" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;">
+  </div>
+  <div class="img-slot">
+    <img src="images/photo4.jpg" alt="Homme lisant un livre" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;">
+  </div>
+</div>
+
+<!-- ── CTA FINAL ─────────────────────────────────────────── -->
+<section class="cta">
+  <h2 class="d-xl r">
+    Commence à<br>te mesurer.
+  </h2>
+  <div class="cta-actions r d1">
+    <a href="#" class="btn btn-fill">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11"/></svg>
+      Télécharger — App Store
+    </a>
+    <span class="subnote">Gratuit · Sans publicité · iOS 16+</span>
+  </div>
+</section>
+
+<!-- ── FOOTER ─────────────────────────────────────────────── -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <div class="footer-logo">OnTrack</div>
+      <div class="footer-sub">Le Strava de l'effort intellectuel</div>
+    </div>
+    <div class="footer-nav">
+      <button class="f-link" onclick="openModal('privacy')">Politique de confidentialité</button>
+      <button class="f-link" onclick="openModal('terms')">Conditions d'utilisation</button>
+      <a href="mailto:dpo@ontrack.app" class="f-link">Contact DPO</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2025 OnTrack. Tous droits réservés.</span>
+    <span class="footer-legal">Droit suisse · LPD & RGPD</span>
+  </div>
+</footer>
+
+<!-- ── MODAL: PRIVACY ────────────────────────────────────── -->
+<div class="overlay" id="modal-privacy" role="dialog" aria-modal="true" aria-labelledby="t-privacy">
+  <div class="sheet">
+    <div class="sheet-bar">
+      <h2 class="sheet-title" id="t-privacy">Politique de confidentialité</h2>
+      <button class="sheet-close" onclick="closeModal('privacy')">Fermer ×</button>
+    </div>
+    <div class="sheet-body">
+      <span class="sheet-date">Mise à jour — 01 janvier 2025</span>
+
+      <h3>1. Responsable du traitement</h3>
+      <p>OnTrack est responsable du traitement de vos données personnelles. Contact : <strong>dpo@ontrack.app</strong>. Siège social : Genève, Suisse.</p>
+
+      <h3>2. Données collectées</h3>
+      <p>Nous collectons uniquement les données nécessaires au fonctionnement de l'application :</p>
+      <ul>
+        <li>Données de compte : adresse e-mail, pseudonyme (si applicable)</li>
+        <li>Données d'usage : durée des sessions, catégories, scores de concentration</li>
+        <li>Données techniques : version iOS, type d'appareil, logs d'erreur anonymisés</li>
+        <li>Données de paiement : traitées exclusivement par Apple — nous n'y avons pas accès</li>
+      </ul>
+      <p>Nous ne collectons <strong>jamais</strong> : localisation, contacts, photos, micro, caméra.</p>
+
+      <h3>3. Bases légales</h3>
+      <ul>
+        <li><strong>Exécution du contrat</strong> (art. 6.1.b RGPD) — fonctionnement et synchronisation</li>
+        <li><strong>Intérêt légitime</strong> (art. 6.1.f RGPD) — analytics agrégés et anonymisés</li>
+        <li><strong>Consentement</strong> (art. 6.1.a RGPD) — notifications push si activées</li>
+      </ul>
+
+      <h3>4. Conservation</h3>
+      <p>Données conservées pendant la durée d'utilisation active, puis supprimées sous 30 jours après fermeture du compte. Logs techniques : 12 mois.</p>
+
+      <h3>5. Partage</h3>
+      <p>Nous ne vendons jamais vos données. Partage possible uniquement avec nos sous-traitants techniques (sous contrat strict) et les autorités compétentes sur obligation légale.</p>
+
+      <h3>6. Transferts internationaux</h3>
+      <p>Hébergement en Europe (UE). Tout transfert hors UE est encadré par les clauses contractuelles types de la Commission européenne.</p>
+
+      <h3>7. Vos droits</h3>
+      <p>Conformément au RGPD (art. 15–22) et à la nLPD suisse, vous disposez des droits d'accès, rectification, effacement, portabilité, opposition et limitation.</p>
+      <p>Pour les exercer : <strong>dpo@ontrack.app</strong> — réponse sous 30 jours.</p>
+
+      <h3>8. DPO</h3>
+      <p>Délégué à la protection des données : <strong>dpo@ontrack.app</strong>. Autorité compétente : PFPDT (Suisse) ou CNIL (France).</p>
+
+      <h3>9. Sécurité</h3>
+      <p>Chiffrement en transit (TLS 1.3) et au repos (AES-256). Accès restreint au personnel nécessaire sous engagement de confidentialité.</p>
+
+      <h3>10. Droit applicable</h3>
+      <p>Droit suisse, nLPD (RS 235.1), et RGPD pour les utilisateurs résidant dans l'UE.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL: TERMS ──────────────────────────────────────── -->
+<div class="overlay" id="modal-terms" role="dialog" aria-modal="true" aria-labelledby="t-terms">
+  <div class="sheet">
+    <div class="sheet-bar">
+      <h2 class="sheet-title" id="t-terms">Conditions d'utilisation</h2>
+      <button class="sheet-close" onclick="closeModal('terms')">Fermer ×</button>
+    </div>
+    <div class="sheet-body">
+      <span class="sheet-date">Mise à jour — 01 janvier 2025</span>
+
+      <h3>1. Acceptation</h3>
+      <p>En téléchargeant ou utilisant OnTrack, vous acceptez les présentes conditions. Dans le cas contraire, veuillez ne pas utiliser l'application.</p>
+
+      <h3>2. Service</h3>
+      <p>OnTrack est une application mobile de suivi de l'effort intellectuel permettant de mesurer, analyser et visualiser vos sessions de travail. Certaines fonctionnalités avancées nécessitent un abonnement payant.</p>
+
+      <h3>3. Compte utilisateur</h3>
+      <p>Vous êtes responsable de la confidentialité de vos identifiants. Vous vous engagez à fournir des informations exactes, maintenir la sécurité de vos accès et nous notifier de tout accès non autorisé.</p>
+
+      <h3>4. Utilisation acceptable</h3>
+      <p>Usage exclusivement légal et conforme aux présentes conditions. Sont notamment interdits : compromettre la sécurité de l'application, reproduire ou vendre le service, utiliser des robots automatisés, usurper une identité.</p>
+
+      <h3>5. Propriété intellectuelle</h3>
+      <p>OnTrack et tous ses éléments sont protégés par les lois suisses et internationales sur la propriété intellectuelle. Vos données personnelles restent votre propriété.</p>
+
+      <h3>6. Abonnements et paiements</h3>
+      <p>Gérés exclusivement via l'App Store d'Apple. Les conditions de facturation et remboursement sont régies par les conditions d'Apple. Nous ne traitons aucun paiement directement.</p>
+
+      <h3>7. Disponibilité</h3>
+      <p>Nous visons une disponibilité continue mais ne la garantissons pas. Des interruptions pour maintenance peuvent survenir avec préavis raisonnable.</p>
+
+      <h3>8. Limitation de responsabilité</h3>
+      <p>Dans les limites permises par le droit suisse, OnTrack n'est pas responsable des dommages indirects, pertes de données ou décisions prises sur la base des données affichées.</p>
+
+      <h3>9. Modifications</h3>
+      <p>Toute modification substantielle vous sera notifiée 30 jours avant son entrée en vigueur.</p>
+
+      <h3>10. Droit applicable</h3>
+      <p>Droit suisse. Juridiction : tribunaux de <strong>Genève, Suisse</strong>. Contact : <strong>legal@ontrack.app</strong></p>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Reveal
+  const io = new IntersectionObserver((es) => {
+    es.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -24px 0px' });
+  document.querySelectorAll('.r').forEach(el => io.observe(el));
+
+  // Modals
+  function openModal(id) {
+    document.getElementById('modal-' + id).classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal(id) {
+    document.getElementById('modal-' + id).classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.querySelectorAll('.overlay').forEach(el => {
+    el.addEventListener('click', e => {
+      if (e.target === el) closeModal(el.id.replace('modal-', ''));
+    });
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape')
+      document.querySelectorAll('.overlay.open').forEach(el =>
+        closeModal(el.id.replace('modal-', '')));
+  });
+</script>
 </body>
 </html>
